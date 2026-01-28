@@ -1,9 +1,13 @@
 package com.banking.userservices.Models;
 
 import com.banking.userservices.Enum.Role;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EnableJpaAuditing
 @Builder
 @Table(name = "user")
 public class User {
@@ -36,7 +41,7 @@ public class User {
     @Size(min = 10)
     private String phoneNumber;
 
-    @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
@@ -44,7 +49,10 @@ public class User {
 
     private Boolean isActive;
 
+    @CreatedDate
+    @Column(updatable = false)
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime lastLogin;
 

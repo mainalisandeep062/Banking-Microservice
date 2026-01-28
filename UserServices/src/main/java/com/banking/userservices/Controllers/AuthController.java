@@ -4,8 +4,11 @@ import com.banking.userservices.Config.JwtConfig;
 import com.banking.userservices.Converter.UserConverter;
 import com.banking.userservices.Models.User;
 import com.banking.userservices.Repo.UserRepo;
+import com.banking.userservices.Services.UserServices;
 import com.banking.userservices.dto.AuthRequestDto;
 import com.banking.userservices.dto.AuthResponseDto;
+import com.banking.userservices.dto.user.UserRequestDto;
+import com.banking.userservices.dto.user.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,6 +25,7 @@ public class AuthController {
 
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final UserServices userServices;
     private final JwtConfig jwt;
     private final UserConverter userConverter;
 
@@ -43,5 +47,11 @@ public class AuthController {
                 .token(token)
                 .build());
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserResponseDto> register(@RequestBody UserRequestDto userRequestDto){
+        return ResponseEntity.ok(userServices.registerUser(userRequestDto));
+    }
+
 
 }

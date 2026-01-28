@@ -20,8 +20,7 @@ public class UserServicesImpl implements UserServices {
 
     @Override
     public UserResponseDto registerUser(UserRequestDto userRequest) {
-        User user = new User();
-        user.builder()
+        User user = User.builder()
                 .firstName(userRequest.getFirstName())
                 .lastName(userRequest.getLastName())
                 .email(userRequest.getEmail())
@@ -47,12 +46,13 @@ public class UserServicesImpl implements UserServices {
         return null;
     }
 
+    @Override
     public UserResponseDto toDto (User user){
         if(user == null){
             return null;
         }
-        UserResponseDto userResponseDto = new UserResponseDto();
-        userResponseDto.builder()
+
+        return UserResponseDto.builder()
                 .userId(user.getUserId())
                 .fullName(user.getFirstName() +  " " + user.getLastName())
                 .email(user.getEmail())
@@ -62,9 +62,6 @@ public class UserServicesImpl implements UserServices {
                 .isActive(user.getIsActive())
                 .createdAt(user.getCreatedAt())
                 .build();
-
-        return userResponseDto;
-
     }
 }
 
