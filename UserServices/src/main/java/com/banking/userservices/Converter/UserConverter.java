@@ -11,8 +11,7 @@ public class UserConverter {
         if(user == null){
             return null;
         }
-        UserResponseDto userResponseDto = new UserResponseDto();
-        userResponseDto.builder()
+        return UserResponseDto.builder()
                 .userId(user.getUserId())
                 .fullName(user.getFirstName() +  " " + user.getLastName())
                 .email(user.getEmail())
@@ -22,8 +21,5 @@ public class UserConverter {
                 .isActive(user.getIsActive())
                 .createdAt(user.getCreatedAt())
                 .build();
-
-        return userResponseDto;
-
     }
 }

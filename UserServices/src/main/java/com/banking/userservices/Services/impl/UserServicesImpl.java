@@ -1,5 +1,6 @@
 package com.banking.userservices.Services.impl;
 
+import com.banking.userservices.Converter.UserConverter;
 import com.banking.userservices.Models.User;
 import com.banking.userservices.Repo.UserRepo;
 import com.banking.userservices.Services.UserServices;
@@ -44,6 +45,11 @@ public class UserServicesImpl implements UserServices {
     @Override
     public UserResponseDto updateMyProfile(UserRequestDto userRequest) {
         return null;
+    }
+
+    @Override
+    public String updatePassword(String oldPassword, String newPassword) {
+            return "";
     }
 
     @Override

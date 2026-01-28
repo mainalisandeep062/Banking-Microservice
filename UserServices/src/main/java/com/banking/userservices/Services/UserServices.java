@@ -11,6 +11,8 @@ public interface UserServices {
 
     UserResponseDto updateMyProfile(UserRequestDto userRequest);
 
+    String updatePassword(String oldPassword, String newPassword);
+
     UserResponseDto toDto (User user);
 
 }

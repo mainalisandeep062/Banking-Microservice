@@ -9,6 +9,7 @@ import com.banking.userservices.dto.AuthRequestDto;
 import com.banking.userservices.dto.AuthResponseDto;
 import com.banking.userservices.dto.user.UserRequestDto;
 import com.banking.userservices.dto.user.UserResponseDto;
+import com.banking.userservices.exception.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -30,7 +31,7 @@ public class AuthController {
     private final UserConverter userConverter;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto authRequestDto){
+    public ApiResponse<AuthResponseDto> login(@RequestBody AuthRequestDto authRequestDto){
         User user =  userRepo.findByEmail(authRequestDto.getEmail())
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
 
@@ -41,7 +42,9 @@ public class AuthController {
         String role = user.getRole().toString();
         String token = jwt.generateToken(authRequestDto.getEmail(), role);
 
-        return ResponseEntity.ok(new AuthResponseDto().builder()
+        return ApiResponse.success(200,
+                "ok",
+                new AuthResponseDto().builder()
                 .fullName(user.getFirstName() + " " + user.getLastName())
                 .role(user.getRole())
                 .token(token)
@@ -49,8 +52,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDto> register(@RequestBody UserRequestDto userRequestDto){
-        return ResponseEntity.ok(userServices.registerUser(userRequestDto));
+    public ApiResponse<UserResponseDto> register(@RequestBody UserRequestDto userRequestDto){
+        return ApiResponse.success(200, "ok", userServices.registerUser(userRequestDto));
     }
 
 
