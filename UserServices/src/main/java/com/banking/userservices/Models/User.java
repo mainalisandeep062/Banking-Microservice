@@ -1,5 +1,6 @@
 package com.banking.userservices.Models;
 
+import com.banking.userservices.Enum.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -41,8 +42,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    private Boolean isActive;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -50,10 +50,4 @@ public class User {
 
 }
 
-enum Role {
-    USER, ADMIN
-}
 
-enum Status {
-    ACTIVE, INACTIVE
-}
