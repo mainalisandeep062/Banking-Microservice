@@ -10,8 +10,9 @@ import com.banking.userservices.dto.AuthResponseDto;
 import com.banking.userservices.dto.user.UserRequestDto;
 import com.banking.userservices.dto.user.UserResponseDto;
 import com.banking.userservices.exception.ApiResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import lombok.*;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final UserRepo userRepo;
@@ -40,6 +42,11 @@ public class AuthController {
         }
 
         String role = user.getRole().toString();
+        int updated = userRepo.updateUserLastLogin(user.getUserId());
+        if (updated != 1) {
+            log.error("Failed to update last_login for userId= {}", user.getUserId());
+        }
+
         String token = jwt.generateToken(authRequestDto.getEmail(), role);
 
         return ApiResponse.success(200,
