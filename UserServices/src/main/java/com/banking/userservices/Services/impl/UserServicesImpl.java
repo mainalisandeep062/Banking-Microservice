@@ -1,11 +1,11 @@
 package com.banking.userservices.Services.impl;
 
-import com.banking.userservices.Converter.UserConverter;
 import com.banking.userservices.Models.User;
 import com.banking.userservices.Repo.UserRepo;
 import com.banking.userservices.Services.UserServices;
 import com.banking.userservices.dto.user.UserRequestDto;
 import com.banking.userservices.dto.user.UserResponseDto;
+import com.banking.userservices.dto.user.UserUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,13 +43,33 @@ public class UserServicesImpl implements UserServices {
     }
 
     @Override
-    public UserResponseDto updateMyProfile(UserRequestDto userRequest) {
-        return null;
+    public UserResponseDto updateMyProfile(String email, UserUpdateDto userRequest) {
+        if(userRequest == null)
+            return null;
+        User user = repo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User with email " + email + " not found!"));
+        if (userRequest.getFirstName() != null) user.setFirstName(userRequest.getFirstName());
+        if (userRequest.getLastName() != null) user.setLastName(userRequest.getLastName());
+        if (userRequest.getDateOfBirth() != null) user.setDateOfBirth(userRequest.getDateOfBirth());
+
+        //todo: add verification step to update the email
+        if (userRequest.getEmail() != null) user.setEmail(userRequest.getEmail());
+
+        repo.save(user);
+        return toDto(user);
     }
 
     @Override
-    public String updatePassword(String oldPassword, String newPassword) {
-            return "";
+    public String updatePassword(String email, String oldPassword, String newPassword) {
+        User user = repo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User with email " + email + " not found!"));
+        if(passwordEncoder.matches(oldPassword,user.getPassword())){
+            user.setPassword(passwordEncoder.encode(newPassword));
+        }else{
+            throw new RuntimeException("Old password doesn't match!");
+        }
+        repo.save(user);
+        return "Password updated successfully!";
     }
 
     @Override

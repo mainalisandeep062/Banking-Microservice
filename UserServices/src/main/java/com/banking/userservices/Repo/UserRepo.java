@@ -1,6 +1,7 @@
 package com.banking.userservices.Repo;
 
 import com.banking.userservices.Models.User;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +20,7 @@ public interface UserRepo extends JpaRepository<User,Long> {
                     """, nativeQuery = true)
     Optional<User> findByEmail(@Param("email")String email);
 
-
+    @Transactional
     @Modifying
     @Query(
             value ="""
@@ -27,5 +28,5 @@ public interface UserRepo extends JpaRepository<User,Long> {
                         set u.last_login=CURRENT_TIMESTAMP()
                         WHERE u.user_id=:id
                     """, nativeQuery = true)
-    void updateUserLastLogin(@Param("id")Long id);
+    int updateUserLastLogin(@Param("id")Long id);
 }
