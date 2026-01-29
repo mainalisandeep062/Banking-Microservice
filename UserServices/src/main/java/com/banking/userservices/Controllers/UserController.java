@@ -26,9 +26,7 @@ public class UserController {
     }
 
     @PatchMapping("/change-password")
-    public ApiResponse<String>  changePassword(@AuthenticationPrincipal String email,
-                                               @RequestParam String oldPassword,
-                                               @RequestParam String newPassword) {
+    public ApiResponse<String>  changePassword(@AuthenticationPrincipal String email, String oldPassword, String newPassword) {
         return ApiResponse.success(200, "ok", userServices.updatePassword(email, oldPassword, newPassword));
     }
 }
