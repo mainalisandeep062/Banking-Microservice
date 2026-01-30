@@ -22,10 +22,14 @@ public class AccountDetails {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
+    @Column(length = 30, nullable = false)
+    @Enumerated(EnumType.STRING)
     private Currency  currency;
+
     private BigDecimal dailyWithdrawalLimit;
     private BigDecimal perTransactionLimit;
     private String nomineeName;
+    private String nomineeEmail;
     private String nomineeRelationship;
     private Boolean isKycVerified;
 }
