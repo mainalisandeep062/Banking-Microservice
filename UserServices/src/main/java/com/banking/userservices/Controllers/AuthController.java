@@ -1,7 +1,7 @@
 package com.banking.userservices.Controllers;
 
+import com.banking.userservices.Config.CustomUserDetails;
 import com.banking.userservices.Config.JwtConfig;
-import com.banking.userservices.Converter.UserConverter;
 import com.banking.userservices.Models.User;
 import com.banking.userservices.Repo.UserRepo;
 import com.banking.userservices.Services.UserServices;
@@ -13,8 +13,9 @@ import com.banking.userservices.exception.ApiResponse;
 import lombok.*;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,36 +28,45 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserRepo userRepo;
-    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
     private final UserServices userServices;
     private final JwtConfig jwt;
-    private final UserConverter userConverter;
 
     @PostMapping("/login")
-    public ApiResponse<AuthResponseDto> login(@RequestBody AuthRequestDto authRequestDto){
-        User user =  userRepo.findByEmail(authRequestDto.getEmail())
-                .orElseThrow(() -> new BadCredentialsException("User not found"));
+    public ApiResponse<AuthResponseDto> login(
+            @RequestBody AuthRequestDto authRequestDto) {
 
-        if(!passwordEncoder.matches(authRequestDto.getPassword(),user.getPassword())){
-            throw new BadCredentialsException("Wrong email or password");
-        }
+        Authentication authentication =
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                authRequestDto.getEmail(),
+                                authRequestDto.getPassword()
+                        )
+                );
 
-        String role = user.getRole().toString();
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        User user = userDetails.getUser();
+
         int updated = userRepo.updateUserLastLogin(user.getUserId());
         if (updated != 1) {
-            log.error("Failed to update last_login for userId= {}", user.getUserId());
+            log.error("Failed to update last_login for userId={}", user.getUserId());
         }
 
-        String token = jwt.generateToken(authRequestDto.getEmail(), role);
+        String token = jwt.generateToken(userDetails);
 
-        return ApiResponse.success(200,
+        return ApiResponse.success(
+                200,
                 "ok",
-                new AuthResponseDto().builder()
-                .fullName(user.getFirstName() + " " + user.getLastName())
-                .role(user.getRole())
-                .token(token)
-                .build());
+                AuthResponseDto.builder()
+                        .fullName(user.getFirstName() + " " + user.getLastName())
+                        .role(user.getRole())
+                        .token(token)
+                        .build()
+        );
     }
+
 
     @PostMapping("/register")
     public ApiResponse<UserResponseDto> register(@RequestBody UserRequestDto userRequestDto){

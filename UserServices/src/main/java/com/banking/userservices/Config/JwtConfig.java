@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Component
@@ -29,10 +31,16 @@ public class JwtConfig {
         this.signingKey = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String email, String role) {
+    public String generateToken(CustomUserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userDetails.getUserId());
+        claims.put("firstName", userDetails.getFirstName());
+        claims.put("lastName", userDetails.getLastName());
+        claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
+
         return Jwts.builder()
-                .setSubject(email)
-                .claim("role", role)
+                .setSubject(userDetails.getUsername())
+                .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(signingKey, SignatureAlgorithm.HS256)
