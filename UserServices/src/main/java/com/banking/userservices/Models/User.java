@@ -51,7 +51,7 @@ public class User {
 
     @CreatedDate
     @Column(updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
     @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime lastLogin;

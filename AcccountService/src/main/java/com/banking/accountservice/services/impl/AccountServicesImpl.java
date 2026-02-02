@@ -84,8 +84,9 @@ public class AccountServicesImpl implements AccountServices {
     public AccountResponseDto toDto(Account account, AccountDetails accountDetails) {
         if(account == null || accountDetails == null)
             return null;
+
         UserResponseDto userResponseDto = userClient.getUserById(account.getUserId()).getBody();
-        AccountResponseDto accountResponseDto = AccountResponseDto.builder()
+        return AccountResponseDto.builder()
                 .accountId(account.getAccountId())
                 .accountNumber(account.getAccountNumber())
                 .accountHolderName(userResponseDto.getFullName())
@@ -95,7 +96,6 @@ public class AccountServicesImpl implements AccountServices {
                 .currency(accountDetails.getCurrency())
                 .isKycVerified(accountDetails.getIsKycVerified())
                 .build();
-        return accountResponseDto;
     }
 
     public String generateAccountNumber() {

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -30,7 +31,6 @@ public class UserServicesImpl implements UserServices {
                 .dateOfBirth(userRequest.getDateOfBirth())
                 .role(userRequest.getRole())
                 .isActive(true)
-                .createdAt(LocalDateTime.now())
                 .build();
         repo.save(user);
         return toDto(user);
