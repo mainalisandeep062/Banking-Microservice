@@ -94,5 +94,11 @@ public class UserServicesImpl implements UserServices {
     public Boolean checkIfUserExists(Long userId) {
        return repo.existsByUserId(userId);
     }
+
+    @Override
+    public UserResponseDto getUserById(Long userId) {
+        return toDto(repo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User Not found!!")));
+    }
 }
 

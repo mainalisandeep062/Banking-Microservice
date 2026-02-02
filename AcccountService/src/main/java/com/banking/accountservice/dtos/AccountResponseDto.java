@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,7 +21,7 @@ public class AccountResponseDto {
     private String accountHolderName;
     private AccountType accountType;
     private Status status;
-    private LocalDateTime createdDate;
+    private LocalDate createdDate;
     private Currency currency;
     private Boolean isKycVerified;
 }

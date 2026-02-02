@@ -20,6 +20,11 @@ public class UserController {
         return ApiResponse.success(200, "ok", userServices.fetchMyProfile(email));
     }
 
+    @GetMapping
+    public ApiResponse<UserResponseDto> getUserById(@RequestParam Long userId) {
+        return ApiResponse.success(200, "OK", userServices.getUserById(userId));
+    }
+
     @PutMapping("/update-profile")
     public ApiResponse<UserResponseDto> updateMyProfile(@AuthenticationPrincipal String email, @RequestBody UserUpdateDto userUpdateDto ) {
         return ApiResponse.success(200, "ok", userServices.updateMyProfile(email, userUpdateDto));

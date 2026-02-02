@@ -4,6 +4,7 @@ import com.banking.accountservice.clientFeign.UserClient;
 import com.banking.accountservice.dtos.AccountRequestDto;
 import com.banking.accountservice.dtos.AccountResponseDto;
 import com.banking.accountservice.dtos.AccountUpdateDto;
+import com.banking.accountservice.dtos.external.UserResponseDto;
 import com.banking.accountservice.enums.Status;
 import com.banking.accountservice.models.Account;
 import com.banking.accountservice.models.AccountDetails;
@@ -81,7 +82,20 @@ public class AccountServicesImpl implements AccountServices {
     }
 
     public AccountResponseDto toDto(Account account, AccountDetails accountDetails) {
-        return null;
+        if(account == null || accountDetails == null)
+            return null;
+        UserResponseDto userResponseDto = userClient.getUserById(account.getUserId()).getBody();
+        AccountResponseDto accountResponseDto = AccountResponseDto.builder()
+                .accountId(account.getAccountId())
+                .accountNumber(account.getAccountNumber())
+                .accountHolderName(userResponseDto.getFullName())
+                .accountType(account.getAccountType())
+                .status(account.getStatus())
+                .createdDate(account.getCreatedAt())
+                .currency(accountDetails.getCurrency())
+                .isKycVerified(accountDetails.getIsKycVerified())
+                .build();
+        return accountResponseDto;
     }
 
     public String generateAccountNumber() {

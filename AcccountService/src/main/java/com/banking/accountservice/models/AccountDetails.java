@@ -12,7 +12,9 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "account_details")
+@Table(name = "account_details", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "id", name = "uk_acc_did")
+})
 public class AccountDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +24,7 @@ public class AccountDetails {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @Column(length = 30, nullable = false)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Currency  currency;
 
