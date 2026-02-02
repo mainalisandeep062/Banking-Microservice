@@ -16,4 +16,5 @@ public interface UserServices {
 
     UserResponseDto toDto(User user);
 
+    Boolean checkIfUserExists(Long userId);
 }

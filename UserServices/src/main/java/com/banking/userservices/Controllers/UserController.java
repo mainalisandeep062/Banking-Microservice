@@ -29,4 +29,10 @@ public class UserController {
     public ApiResponse<String>  changePassword(@AuthenticationPrincipal String email, String oldPassword, String newPassword) {
         return ApiResponse.success(200, "ok", userServices.updatePassword(email, oldPassword, newPassword));
     }
+
+    @GetMapping("/exists-by/{userId}")
+    public ApiResponse<Boolean> checkIfUserExists(@PathVariable Long userId){
+        return ApiResponse.success(200, "OK", userServices.checkIfUserExists(userId));
+    }
+
 }

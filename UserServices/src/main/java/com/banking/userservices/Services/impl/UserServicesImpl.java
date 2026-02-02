@@ -89,5 +89,10 @@ public class UserServicesImpl implements UserServices {
                 .createdAt(user.getCreatedAt())
                 .build();
     }
+
+    @Override
+    public Boolean checkIfUserExists(Long userId) {
+       return repo.existsByUserId(userId);
+    }
 }
 

@@ -29,4 +29,6 @@ public interface UserRepo extends JpaRepository<User,Long> {
                         WHERE u.user_id=:id
                     """, nativeQuery = true)
     int updateUserLastLogin(@Param("id")Long id);
+
+    Boolean existsByUserId(Long email);
 }

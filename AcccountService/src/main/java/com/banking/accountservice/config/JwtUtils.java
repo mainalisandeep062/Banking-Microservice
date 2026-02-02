@@ -1,50 +1,28 @@
-package com.banking.userservices.Config;
+package com.banking.accountservice.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct; // For initialization
-import org.springframework.beans.factory.annotation.Value; // For properties
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
+import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 @Component
-public class JwtConfig {
+public class JwtUtils {
 
-    @Value("${app.jwt.secret}")
+    @Value("${jwt.secret}")
     private String secretString;
 
-    @Value("${app.jwt.expiration}")
-    private long expirationTime;
 
     private Key signingKey;
 
     @PostConstruct
     protected void init() {
         this.signingKey = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
-    }
-
-    public String generateToken(CustomUserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userDetails.getUserId());
-        claims.put("firstName", userDetails.getFirstName());
-        claims.put("lastName", userDetails.getLastName());
-        claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(signingKey, SignatureAlgorithm.HS256)
-                .compact();
     }
 
     public String extractEmail(String token) {

@@ -29,7 +29,7 @@ public class GatewayConfig {
 
                 // 3. SECURED ROUTE: Account Service
                 .and(route()
-                        .route(path("/api/accounts/**"), http())
+                        .route(path("/api/account/**"), http())
                         .filter(authFilter.apply())   // Your JWT Bouncer
                         .filter(lb("ACCOUNT-SERVICE")) // Load balancer
                         .build())
