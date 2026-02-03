@@ -2,7 +2,7 @@ package com.banking.accountservice.services;
 
 import com.banking.accountservice.dtos.AccountRequestDto;
 import com.banking.accountservice.dtos.AccountResponseDto;
-import com.banking.accountservice.dtos.AccountUpdateDto;
+import com.banking.accountservice.enums.Status;
 
 public interface AccountServices {
     AccountResponseDto createAccount(AccountRequestDto accountRequestDto);
@@ -11,7 +11,7 @@ public interface AccountServices {
 
     AccountResponseDto getAccountByAccountNumber(String accountNumber);
 
-    AccountResponseDto updateAccount(AccountUpdateDto accountUpdateDto);
+    AccountResponseDto updateAccountStatus(Status status);
 
-    AccountResponseDto closeAccount(AccountRequestDto accountRequestDto);
+    AccountResponseDto closeAccount(String email, String password, String accountNumber);
 }

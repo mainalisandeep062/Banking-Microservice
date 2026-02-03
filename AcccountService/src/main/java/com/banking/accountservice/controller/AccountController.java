@@ -2,10 +2,10 @@ package com.banking.accountservice.controller;
 
 import com.banking.accountservice.dtos.AccountRequestDto;
 import com.banking.accountservice.dtos.AccountResponseDto;
+import com.banking.accountservice.enums.Status;
 import com.banking.accountservice.exception.ApiResponse;
 import com.banking.accountservice.services.AccountServices;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,13 +15,22 @@ public class AccountController {
 
     private final AccountServices accountServices;
 
-    @GetMapping
-    public String greet(Authentication authentication) {
-        return "Hello " + authentication.getName();
-    }
-
     @PostMapping("/create-account")
     public ApiResponse<AccountResponseDto> createAccount(@RequestBody AccountRequestDto accountRequestDto) {
         return ApiResponse.success(200, "OK", accountServices.createAccount(accountRequestDto));
+    }
+
+    @PostMapping("/update")
+    public ApiResponse<AccountResponseDto> updateAccountStatus(@RequestParam Status status) {
+        return ApiResponse.success(200, "OK", accountServices.updateAccountStatus(status));
+    }
+
+    @PostMapping("/close-account")
+    public ApiResponse<AccountResponseDto> CloseAccount(@RequestParam String email,
+                                                        @RequestParam String password,
+                                                        @RequestParam String accountNumber){
+        return ApiResponse.success(200,
+                "Account Closed Successfully!!",
+                accountServices.closeAccount(password, email, accountNumber));
     }
 }

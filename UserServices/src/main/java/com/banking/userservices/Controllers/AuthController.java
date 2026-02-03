@@ -73,5 +73,9 @@ public class AuthController {
         return ApiResponse.success(200, "ok", userServices.registerUser(userRequestDto));
     }
 
+    public ApiResponse<Boolean> authenticate(){
+        return ApiResponse.success(200, "ok", true);
+    }
+
 
 }

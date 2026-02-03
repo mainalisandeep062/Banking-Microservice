@@ -3,7 +3,6 @@ package com.banking.accountservice.services.impl;
 import com.banking.accountservice.clientFeign.UserClient;
 import com.banking.accountservice.dtos.AccountRequestDto;
 import com.banking.accountservice.dtos.AccountResponseDto;
-import com.banking.accountservice.dtos.AccountUpdateDto;
 import com.banking.accountservice.dtos.external.UserResponseDto;
 import com.banking.accountservice.enums.Status;
 import com.banking.accountservice.models.Account;
@@ -72,12 +71,13 @@ public class AccountServicesImpl implements AccountServices {
     }
 
     @Override
-    public AccountResponseDto updateAccount(AccountUpdateDto accountUpdateDto) {
+    public AccountResponseDto updateAccountStatus(Status status) {
+
         return null;
     }
 
     @Override
-    public AccountResponseDto closeAccount(AccountRequestDto accountRequestDto) {
+    public AccountResponseDto closeAccount(String email, String password, String accountNumber) {
         return null;
     }
 

@@ -1,10 +1,13 @@
 package com.banking.accountservice.config;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.Key;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,6 +43,16 @@ public class AuthenticationFilterConfig extends OncePerRequestFilter {
 
         jwt = authHeader.substring(7);
 
+        Claims claims = jwtUtils.extractAllClaims(jwt);
+
+        CurrentUser currentUser = CurrentUser.builder()
+                .subject(claims.getSubject())
+                .userId(claims.get("userId", String.class))
+                .role(claims.get("role", String.class))
+                .firstName(claims.get("firstName", String.class))
+                .lastName(claims.get("lastName", String.class))
+                .build();
+
         try {
             if (jwtUtils.validateToken(jwt)) {
                 userEmail = jwtUtils.extractEmail(jwt);
@@ -47,7 +61,7 @@ public class AuthenticationFilterConfig extends OncePerRequestFilter {
                     // 3. Extract roles/authorities
                     String role = jwtUtils.extractRole(jwt);
                     List<SimpleGrantedAuthority> authorities = Collections.singletonList(
-                            new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role)
+                            new SimpleGrantedAuthority(role)
                     );
 
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
