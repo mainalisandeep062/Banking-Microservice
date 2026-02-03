@@ -5,7 +5,7 @@ import lombok.Builder;
 @Builder
 public record CurrentUser(
         String subject,
-        String userId,
+        Integer userId,
         String role,
         String firstName,
         String lastName

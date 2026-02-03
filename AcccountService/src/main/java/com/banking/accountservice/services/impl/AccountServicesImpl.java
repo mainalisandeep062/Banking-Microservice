@@ -12,6 +12,7 @@ import com.banking.accountservice.repo.AccountRepo;
 import com.banking.accountservice.services.AccountServices;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -71,14 +72,25 @@ public class AccountServicesImpl implements AccountServices {
     }
 
     @Override
-    public AccountResponseDto updateAccountStatus(Status status) {
+    public AccountResponseDto updateAccountStatus(String accountNumber, Status status) {
 
         return null;
     }
 
     @Override
     public AccountResponseDto closeAccount(String email, String password, String accountNumber) {
-        return null;
+        Account account = accountRepo.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Cannot find account by accountNumber: " + accountNumber));
+
+        Boolean authentication = userClient.authenticate(email, password).getBody();
+
+        if(!authentication)
+            throw new BadCredentialsException("Bad Credentials");
+        account.setStatus(Status.CLOSED);
+
+        accountRepo.save(account);
+
+        return toDto(account,  account.getAccountDetails());
     }
 
     public AccountResponseDto toDto(Account account, AccountDetails accountDetails) {

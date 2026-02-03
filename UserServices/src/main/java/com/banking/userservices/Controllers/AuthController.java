@@ -76,7 +76,7 @@ public class AuthController {
     public ApiResponse<Boolean> authenticate(@RequestParam String  email,
                                              @RequestParam String password) {
         User user = userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-        if (passwordEncoder.matches(user.getPassword(), password))
+        if (!passwordEncoder.matches(password, user.getPassword()))
             throw new RuntimeException("Invalid password");
         return ApiResponse.success(200, "ok", true);
 }

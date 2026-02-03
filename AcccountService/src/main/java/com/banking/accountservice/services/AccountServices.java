@@ -11,7 +11,7 @@ public interface AccountServices {
 
     AccountResponseDto getAccountByAccountNumber(String accountNumber);
 
-    AccountResponseDto updateAccountStatus(Status status);
+    AccountResponseDto updateAccountStatus(String accountNumber, Status status);
 
     AccountResponseDto closeAccount(String email, String password, String accountNumber);
 }

@@ -21,8 +21,9 @@ public class AccountController {
     }
 
     @PostMapping("/update")
-    public ApiResponse<AccountResponseDto> updateAccountStatus(@RequestParam Status status) {
-        return ApiResponse.success(200, "OK", accountServices.updateAccountStatus(status));
+    public ApiResponse<AccountResponseDto> updateAccountStatus(@RequestParam Status status,
+                                                               @RequestParam String accountNumber) {
+        return ApiResponse.success(200, "OK", accountServices.updateAccountStatus(accountNumber, status));
     }
 
     @PostMapping("/close-account")
@@ -31,6 +32,6 @@ public class AccountController {
                                                         @RequestParam String accountNumber){
         return ApiResponse.success(200,
                 "Account Closed Successfully!!",
-                accountServices.closeAccount(password, email, accountNumber));
+                accountServices.closeAccount(email, password, accountNumber));
     }
 }

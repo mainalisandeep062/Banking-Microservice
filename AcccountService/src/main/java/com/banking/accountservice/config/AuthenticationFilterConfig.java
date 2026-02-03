@@ -47,7 +47,7 @@ public class AuthenticationFilterConfig extends OncePerRequestFilter {
 
         CurrentUser currentUser = CurrentUser.builder()
                 .subject(claims.getSubject())
-                .userId(claims.get("userId", String.class))
+                .userId(claims.get("userId", Integer.class))
                 .role(claims.get("role", String.class))
                 .firstName(claims.get("firstName", String.class))
                 .lastName(claims.get("lastName", String.class))
