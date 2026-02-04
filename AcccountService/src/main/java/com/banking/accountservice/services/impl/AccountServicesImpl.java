@@ -16,7 +16,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -91,6 +93,14 @@ public class AccountServicesImpl implements AccountServices {
         accountRepo.save(account);
 
         return toDto(account,  account.getAccountDetails());
+    }
+
+    @Override
+    public List<AccountResponseDto> getMyAccount(Long userId) {
+        List<Account> accounts = accountRepo.findByUserId(userId);
+        return accounts.stream()
+                .map(account -> toDto(account, account.getAccountDetails()))
+                .collect(Collectors.toList());
     }
 
     public AccountResponseDto toDto(Account account, AccountDetails accountDetails) {

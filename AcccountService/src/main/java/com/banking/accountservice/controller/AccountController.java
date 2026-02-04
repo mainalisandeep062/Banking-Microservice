@@ -1,12 +1,16 @@
 package com.banking.accountservice.controller;
 
+import com.banking.accountservice.config.CurrentUser;
 import com.banking.accountservice.dtos.AccountRequestDto;
 import com.banking.accountservice.dtos.AccountResponseDto;
 import com.banking.accountservice.enums.Status;
 import com.banking.accountservice.exception.ApiResponse;
 import com.banking.accountservice.services.AccountServices;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +22,11 @@ public class AccountController {
     @PostMapping("/create-account")
     public ApiResponse<AccountResponseDto> createAccount(@RequestBody AccountRequestDto accountRequestDto) {
         return ApiResponse.success(200, "OK", accountServices.createAccount(accountRequestDto));
+    }
+
+    @GetMapping("/my-account")
+    public ApiResponse<List<AccountResponseDto>> getMyAccounts(@AuthenticationPrincipal CurrentUser currentUser) {
+        return ApiResponse.success(200, "Ok", accountServices.getMyAccount(currentUser.userId()) );
     }
 
     @PostMapping("/update")
