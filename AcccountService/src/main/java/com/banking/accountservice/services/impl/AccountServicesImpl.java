@@ -1,8 +1,10 @@
 package com.banking.accountservice.services.impl;
 
 import com.banking.accountservice.clientFeign.UserClient;
+import com.banking.accountservice.config.CurrentUser;
 import com.banking.accountservice.dtos.AccountRequestDto;
 import com.banking.accountservice.dtos.AccountResponseDto;
+import com.banking.accountservice.dtos.CriticalResponseDto;
 import com.banking.accountservice.dtos.external.UserResponseDto;
 import com.banking.accountservice.enums.Status;
 import com.banking.accountservice.models.Account;
@@ -13,6 +15,8 @@ import com.banking.accountservice.services.AccountServices;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -64,16 +68,6 @@ public class AccountServicesImpl implements AccountServices {
     }
 
     @Override
-    public AccountResponseDto getAccountByUserId(Long userId) {
-        return null;
-    }
-
-    @Override
-    public AccountResponseDto getAccountByAccountNumber(String accountNumber) {
-        return null;
-    }
-
-    @Override
     public AccountResponseDto updateAccountStatus(String accountNumber, Status status) {
 
         return null;
@@ -96,11 +90,28 @@ public class AccountServicesImpl implements AccountServices {
     }
 
     @Override
-    public List<AccountResponseDto> getMyAccount(Long userId) {
+    public List<AccountResponseDto> getMyAccounts(Long userId) {
         List<Account> accounts = accountRepo.findByUserId(userId);
         return accounts.stream()
                 .map(account -> toDto(account, account.getAccountDetails()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CriticalResponseDto getBalanceByAccountNumber(Long userId, String accountNumber) {
+        CurrentUser user = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if(accountNumber==null || userId == null)
+            return null;
+        Account account = accountRepo.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Cannot find account with accountNumber: " + accountNumber));
+        if(!userId.equals(account.getUserId()))
+            throw new BadCredentialsException("Only Account holder can Inquire Balance!!!");
+        return CriticalResponseDto.builder()
+                .accountId(account.getAccountId())
+                .accountNumber(accountNumber)
+                .accountHolderName(user.firstName() + " " + user.lastName())
+                .build();
     }
 
     public AccountResponseDto toDto(Account account, AccountDetails accountDetails) {

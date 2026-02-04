@@ -26,7 +26,7 @@ public class AccountController {
 
     @GetMapping("/my-account")
     public ApiResponse<List<AccountResponseDto>> getMyAccounts(@AuthenticationPrincipal CurrentUser currentUser) {
-        return ApiResponse.success(200, "Ok", accountServices.getMyAccount(currentUser.userId()) );
+        return ApiResponse.success(200, "Ok", accountServices.getMyAccounts(currentUser.userId()) );
     }
 
     @PostMapping("/update")
