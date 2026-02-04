@@ -2,6 +2,7 @@ package com.banking.transactionservice.clientFeign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
-@FeignClient()
-public interface UserFeign {
+@FeignClient(name = "ACCOUNT-SERVICE")
+public interface AccountClient {
+
 }
