@@ -2,6 +2,7 @@ package com.banking.accountservice.controller;
 
 import com.banking.accountservice.config.CurrentUser;
 import com.banking.accountservice.dtos.BalanceResponseDto;
+import com.banking.accountservice.dtos.serviceSpecific.TransactionResponseDto;
 import com.banking.accountservice.exception.ApiResponse;
 import com.banking.accountservice.services.AccountServices;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class BalanceController {
     private final AccountServices accountServices;
 
-    public ApiResponse<BalanceResponseDto> withdraw(@RequestParam String accountNumber) {
+    @PutMapping
+    public ApiResponse<TransactionResponseDto> withdraw(@RequestParam String accountNumber) {
+        return null;
+    }
+
+    public ApiResponse<TransactionResponseDto> deposit(@RequestParam String accountNumber) {
+        return null;
+    }
+
+    public  ApiResponse<BalanceResponseDto> transfer(@RequestParam String accountNumber) {
         return null;
     }
 }

@@ -7,8 +7,8 @@ import java.math.BigDecimal;
 
 @Data
 public class DepositRequestDto {
-    private String toAccountNumber;
     private BigDecimal amount;
+    private String toAccountNumber;
     private TransactionType transactionType;
     private String transactionId;
 }
