@@ -4,7 +4,7 @@ import com.banking.accountservice.clientFeign.UserClient;
 import com.banking.accountservice.config.CurrentUser;
 import com.banking.accountservice.dtos.AccountRequestDto;
 import com.banking.accountservice.dtos.AccountResponseDto;
-import com.banking.accountservice.dtos.CriticalResponseDto;
+import com.banking.accountservice.dtos.BalanceResponseDto;
 import com.banking.accountservice.dtos.external.UserResponseDto;
 import com.banking.accountservice.enums.Status;
 import com.banking.accountservice.models.Account;
@@ -15,7 +15,6 @@ import com.banking.accountservice.services.AccountServices;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -98,19 +97,21 @@ public class AccountServicesImpl implements AccountServices {
     }
 
     @Override
-    public CriticalResponseDto getBalanceByAccountNumber(Long userId, String accountNumber) {
+    public BalanceResponseDto getBalanceByAccountNumber(Long userId, String accountNumber) {
         CurrentUser user = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        //Check if the user ID or account number is passed as null
         if(accountNumber==null || userId == null)
             return null;
         Account account = accountRepo.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Cannot find account with accountNumber: " + accountNumber));
         if(!userId.equals(account.getUserId()))
             throw new BadCredentialsException("Only Account holder can Inquire Balance!!!");
-        return CriticalResponseDto.builder()
+        return BalanceResponseDto.builder()
                 .accountId(account.getAccountId())
                 .accountNumber(accountNumber)
                 .accountHolderName(user.firstName() + " " + user.lastName())
+                .currentBalance(account.getBalance())
                 .build();
     }
 

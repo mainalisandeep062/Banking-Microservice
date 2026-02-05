@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Data
 @Builder
-public class CriticalResponseDto {
+public class BalanceResponseDto {
     private Long accountId;
     private String accountNumber;
     private String accountHolderName;

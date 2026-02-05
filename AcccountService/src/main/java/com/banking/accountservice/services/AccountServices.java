@@ -2,7 +2,7 @@ package com.banking.accountservice.services;
 
 import com.banking.accountservice.dtos.AccountRequestDto;
 import com.banking.accountservice.dtos.AccountResponseDto;
-import com.banking.accountservice.dtos.CriticalResponseDto;
+import com.banking.accountservice.dtos.BalanceResponseDto;
 import com.banking.accountservice.enums.Status;
 
 import java.util.List;
@@ -16,6 +16,6 @@ public interface AccountServices {
 
     List<AccountResponseDto> getMyAccounts(Long userId);
 
-    CriticalResponseDto getBalanceByAccountNumber(Long userId, String accountNumber);
+    BalanceResponseDto getBalanceByAccountNumber(Long userId, String accountNumber);
 
 }

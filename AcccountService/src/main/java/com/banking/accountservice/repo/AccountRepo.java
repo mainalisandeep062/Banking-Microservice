@@ -11,7 +11,11 @@ import java.util.Optional;
 
 @Repository
 public interface AccountRepo extends JpaRepository<Account, Long> {
-    Optional<Account> findByAccountNumber(String accountNumber);
+        @Query(value = """
+                        SELECT a.* FROM account a
+                        WHERE a.account_number = :accountNumber
+                """, nativeQuery = true)
+        Optional<Account> findByAccountNumber(@Param("accountNumber")String accountNumber);
 
     Boolean existsByAccountNumber(String accountNumber);
 
