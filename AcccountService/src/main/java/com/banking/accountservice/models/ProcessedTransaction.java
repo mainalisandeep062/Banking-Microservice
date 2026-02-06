@@ -33,3 +33,16 @@ public class ProcessedTransaction {
     private LocalDate date;
 
 }
+
+
+//Validation first → prevents invalid requests immediately.
+//
+//Idempotency check → ensures repeated requests don’t double-deposit.
+//
+//Pessimistic lock → prevents concurrency issues on balance updates.
+//
+//Account status check → ensures money cannot go into closed/frozen accounts.
+//
+//Atomic balance + transaction save → @Transactional ensures consistency.
+//
+//Audit-friendly → every deposit is saved with transaction ID, type, amount, and account reference.

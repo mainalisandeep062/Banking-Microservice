@@ -4,6 +4,7 @@ import com.banking.accountservice.dtos.mirror.transaction.DepositRequestDto;
 import com.banking.accountservice.dtos.mirror.transaction.TransactionResponseDto;
 import com.banking.accountservice.dtos.mirror.transaction.TransferRequestDto;
 import com.banking.accountservice.dtos.mirror.transaction.WithdrawRequestDto;
+import com.banking.accountservice.enums.Status;
 import com.banking.accountservice.enums.TransactionType;
 import com.banking.accountservice.models.Account;
 import com.banking.accountservice.models.ProcessedTransaction;
@@ -49,6 +50,9 @@ public class BalanceServicesImpl implements BalanceServices {
         Account account = accountRepo.findByAccountNumber(withdrawRequestDto.getFromAccountNumber())
                 .orElseThrow(() -> new IllegalArgumentException("Account does not exist!"));
 
+        if(!account.getStatus().equals(Status.ACTIVE))
+            throw new IllegalArgumentException("The account is not active!!");
+
         // check if withdraw amount is greater than the current balance
         updateLimit(account);
         if (account.getBalance().compareTo(withdrawRequestDto.getAmount()) < 0) {
@@ -84,8 +88,46 @@ public class BalanceServicesImpl implements BalanceServices {
     }
 
     @Override
+    @Transactional
     public TransactionResponseDto deposit(DepositRequestDto depositRequestDto) {
-        return null;
+        if(depositRequestDto == null)
+            return null;
+
+        if (depositRequestDto.getAmount() == null ||
+                depositRequestDto.getAmount().compareTo(BigDecimal.ZERO) <= 0)
+            throw new IllegalArgumentException("Deposit amount must be greater than zero");
+
+        if (depositRequestDto.getTransactionId() == null ||
+                depositRequestDto.getTransactionId().isBlank())
+            throw new IllegalArgumentException("Transaction ID is required");
+
+        if (transactionRepo.existsByProcessedTransactionId(depositRequestDto.getTransactionId()))
+            throw new IllegalArgumentException(
+                    "Transaction " + depositRequestDto.getTransactionId() + " has already been processed");
+
+        //Check if the Account exists and is Active
+        Account account = accountRepo.findByAccountNumber(depositRequestDto.getToAccountNumber())
+                .orElseThrow(() -> new IllegalArgumentException("Account does not exist!"));
+        if(!account.getStatus().equals(Status.ACTIVE))
+            throw new IllegalArgumentException("The account is currently " + account.getStatus());
+
+        account.setBalance(account.getBalance().add(depositRequestDto.getAmount()));
+        accountRepo.save(account);
+
+        transactionRepo.save(ProcessedTransaction.builder()
+                        .processedTransactionId(depositRequestDto.getTransactionId())
+                        .transactionType(TransactionType.CREDIT)
+                        .amount(depositRequestDto.getAmount())
+                        .build());
+
+        return TransactionResponseDto.builder()
+                .toAccountNumber(account.getAccountNumber())
+                .fromAccountNumber(null)
+                .amount(depositRequestDto.getAmount())
+                .transactionType(TransactionType.CREDIT)
+                .transactionId(depositRequestDto.getTransactionId())
+                .transactionDate(LocalDateTime.now())
+                .build();
     }
 
     @Override
