@@ -131,14 +131,107 @@ public class BalanceServicesImpl implements BalanceServices {
     }
 
     @Override
+    @Transactional
     public TransactionResponseDto transfer(TransferRequestDto transferRequestDto) {
-        return null;
+
+        // 1. Validate request
+        if (transferRequestDto == null)
+            throw new IllegalArgumentException("Transfer request cannot be null");
+
+        if (transferRequestDto.getAmount() == null || transferRequestDto.getAmount().compareTo(BigDecimal.ZERO) <= 0)
+            throw new IllegalArgumentException("Transfer amount must be greater than zero");
+
+        if (transferRequestDto.getTransactionId() == null || transferRequestDto.getTransactionId().isBlank())
+            throw new IllegalArgumentException("Transaction ID is required");
+
+        if (transferRequestDto.getTransactionType() != TransactionType.TRANSFER)
+            throw new IllegalArgumentException("Invalid transaction type for transfer");
+
+        // 2. Idempotency check
+        if (transactionRepo.existsByProcessedTransactionId(transferRequestDto.getTransactionId())) {
+            throw new IllegalArgumentException(
+                    "Transaction " + transferRequestDto.getTransactionId() + " has already been processed"
+            );
+        }
+
+        String fromAccountNumber = transferRequestDto.getFromAccountNumber();
+        String toAccountNumber = transferRequestDto.getToAccountNumber();
+
+        // 3. Fetch accounts with locks
+        // Lock order by account number to prevent deadlocks
+        Account firstAccountToLock;
+        Account secondAccountToLock;
+
+        if (fromAccountNumber.compareTo(toAccountNumber) < 0) {
+            firstAccountToLock = accountRepo.findByAccountNumber(fromAccountNumber)
+                    .orElseThrow(() -> new IllegalArgumentException("Sender account does not exist"));
+            secondAccountToLock = accountRepo.findByAccountNumber(toAccountNumber)
+                    .orElseThrow(() -> new IllegalArgumentException("Receiver account does not exist"));
+        } else {
+            firstAccountToLock = accountRepo.findByAccountNumber(toAccountNumber)
+                    .orElseThrow(() -> new IllegalArgumentException("Receiver account does not exist"));
+            secondAccountToLock = accountRepo.findByAccountNumber(fromAccountNumber)
+                    .orElseThrow(() -> new IllegalArgumentException("Sender account does not exist"));
+        }
+
+        Account sender = firstAccountToLock.getAccountNumber().equals(fromAccountNumber) ? firstAccountToLock : secondAccountToLock;
+        Account receiver = firstAccountToLock.getAccountNumber().equals(toAccountNumber) ? firstAccountToLock : secondAccountToLock;
+
+        // 4. Validate account status
+        if(!sender.getStatus().equals(Status.ACTIVE))
+            throw new IllegalArgumentException("Sender account is inactive/closed");
+        if(!receiver.getStatus().equals(Status.ACTIVE))
+            throw new IllegalArgumentException("Receiver account is inactive/closed");
+
+        // 5. Validate withdrawal rules
+        updateLimit(sender); // reset daily limit if needed
+
+        if (sender.getBalance().compareTo(transferRequestDto.getAmount()) < 0)
+            throw new IllegalArgumentException("Insufficient funds in sender account");
+
+        if (sender.getAccountDetails().getDailyWithdrawalLimit()
+                .compareTo(sender.getTotalWithdrawToday().add(transferRequestDto.getAmount())) < 0)
+            throw new IllegalArgumentException("Exceeded daily withdrawal limit");
+
+        if (sender.getAccountDetails().getPerTransactionLimit()
+                .compareTo(transferRequestDto.getAmount()) < 0)
+            throw new IllegalArgumentException("Per-transaction limit exceeded");
+
+        // 6. Perform balance updates
+        sender.setBalance(sender.getBalance().subtract(transferRequestDto.getAmount()));
+        sender.setTotalWithdrawToday(sender.getTotalWithdrawToday().add(transferRequestDto.getAmount()));
+
+        receiver.setBalance(receiver.getBalance().add(transferRequestDto.getAmount()));
+
+        accountRepo.save(sender);
+        accountRepo.save(receiver);
+
+        // 7. Save transaction for auditing
+        transactionRepo.save(
+                ProcessedTransaction.builder()
+                        .processedTransactionId(transferRequestDto.getTransactionId())
+                        .transactionType(TransactionType.TRANSFER)
+                        .amount(transferRequestDto.getAmount())
+                        .build()
+        );
+
+        // 8. Build and return response
+        return TransactionResponseDto.builder()
+                .fromAccountNumber(sender.getAccountNumber())
+                .toAccountNumber(receiver.getAccountNumber())
+                .amount(transferRequestDto.getAmount())
+                .transactionType(TransactionType.TRANSFER)
+                .transactionId(transferRequestDto.getTransactionId())
+                .transactionDate(LocalDateTime.now())
+                .build();
     }
+
 
     private void updateLimit(Account account) {
         if (account.getLastTransactionDate() == null || account.getLastTransactionDate().isBefore(LocalDate.now())) {
             account.setTotalWithdrawToday(BigDecimal.ZERO);
             account.setLastTransactionDate(LocalDate.now());
+            accountRepo.save(account);
         }
     }
 

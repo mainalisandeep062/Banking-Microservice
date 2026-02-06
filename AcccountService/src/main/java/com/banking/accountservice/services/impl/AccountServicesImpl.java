@@ -47,6 +47,7 @@ public class AccountServicesImpl implements AccountServices {
                 .userId(accountRequestDto.getUserId())
                 .accountType(accountRequestDto.getAccountType())
                 .balance(BigDecimal.ZERO)
+                .totalWithdrawToday(BigDecimal.ZERO)
                 .status(Status.ACTIVE)
                 .maturityDate(accountRequestDto.getMaturityDate())
                 .build();
