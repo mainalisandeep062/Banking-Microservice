@@ -1,4 +1,4 @@
-package com.banking.accountservice.dtos.serviceSpecific;
+package com.banking.accountservice.dtos.mirror.transaction;
 
 import com.banking.accountservice.enums.TransactionType;
 import lombok.Data;

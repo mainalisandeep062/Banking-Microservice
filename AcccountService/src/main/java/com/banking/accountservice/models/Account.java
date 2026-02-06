@@ -47,6 +47,9 @@ public class Account {
     @LastModifiedDate
     private LocalDate updatedAt;
 
+    private BigDecimal totalWithdrawToday;
+    private LocalDate lastTransactionDate;
+
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private AccountDetails accountDetails;
 }

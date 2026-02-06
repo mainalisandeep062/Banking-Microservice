@@ -1,4 +1,4 @@
-package com.banking.accountservice.dtos.external;
+package com.banking.accountservice.dtos.mirror.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -5,7 +5,7 @@ import com.banking.accountservice.config.CurrentUser;
 import com.banking.accountservice.dtos.AccountRequestDto;
 import com.banking.accountservice.dtos.AccountResponseDto;
 import com.banking.accountservice.dtos.BalanceResponseDto;
-import com.banking.accountservice.dtos.external.UserResponseDto;
+import com.banking.accountservice.dtos.mirror.user.UserResponseDto;
 import com.banking.accountservice.enums.Status;
 import com.banking.accountservice.models.Account;
 import com.banking.accountservice.models.AccountDetails;
