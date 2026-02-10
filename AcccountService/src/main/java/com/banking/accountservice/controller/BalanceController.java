@@ -1,6 +1,5 @@
 package com.banking.accountservice.controller;
 
-import com.banking.accountservice.dtos.BalanceResponseDto;
 import com.banking.accountservice.dtos.mirror.transaction.DepositRequestDto;
 import com.banking.accountservice.dtos.mirror.transaction.TransactionResponseDto;
 import com.banking.accountservice.dtos.mirror.transaction.TransferRequestDto;

@@ -137,10 +137,8 @@ public class BalanceServicesImpl implements BalanceServices {
         // 1. Validate request
         if (transferRequestDto == null)
             throw new IllegalArgumentException("Transfer request cannot be null");
-
         if (transferRequestDto.getAmount() == null || transferRequestDto.getAmount().compareTo(BigDecimal.ZERO) <= 0)
             throw new IllegalArgumentException("Transfer amount must be greater than zero");
-
         if (transferRequestDto.getTransactionId() == null || transferRequestDto.getTransactionId().isBlank())
             throw new IllegalArgumentException("Transaction ID is required");
 
@@ -150,8 +148,7 @@ public class BalanceServicesImpl implements BalanceServices {
         // 2. Idempotency check
         if (transactionRepo.existsByProcessedTransactionId(transferRequestDto.getTransactionId())) {
             throw new IllegalArgumentException(
-                    "Transaction " + transferRequestDto.getTransactionId() + " has already been processed"
-            );
+                    "Transaction " + transferRequestDto.getTransactionId() + " has already been processed");
         }
 
         String fromAccountNumber = transferRequestDto.getFromAccountNumber();
