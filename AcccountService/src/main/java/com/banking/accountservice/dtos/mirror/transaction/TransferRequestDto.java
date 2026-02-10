@@ -11,5 +11,5 @@ public class TransferRequestDto {
     private String fromAccountNumber;
     private BigDecimal amount;
     private TransactionType transactionType;
-    private String transactionId;
+    private Long transactionId;
 }

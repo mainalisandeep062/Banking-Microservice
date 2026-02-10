@@ -36,7 +36,7 @@ public class GatewayConfig {
 
                 // 4. SECURED ROUTE: Transaction Service
                 .and(route()
-                        .route(path("/api/transactions/**"), http())
+                        .route(path("/api/transaction/**"), http())
                         .filter(authFilter.apply())
                         .filter(lb("TRANSACTION-SERVICE"))
                         .build());

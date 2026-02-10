@@ -10,5 +10,5 @@ public class DepositRequestDto {
     private BigDecimal amount;
     private String toAccountNumber;
     private TransactionType transactionType;
-    private String transactionId;
+    private Long transactionId;
 }

@@ -1,6 +1,5 @@
 package com.banking.transactionservice.clientFeign;
 
-import com.banking.transactionservice.dtos.TransactionResponseDto;
 import com.banking.transactionservice.dtos.request.DepositRequestDto;
 import com.banking.transactionservice.dtos.request.TransferRequestDto;
 import com.banking.transactionservice.dtos.request.WithdrawRequestDto;
@@ -13,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface AccountClient {
 
     @PutMapping("/api/account/transaction/withdraw")
-    ApiResponse<TransactionResponseDto> withdraw(@RequestBody WithdrawRequestDto withdrawRequestDto);
+    ApiResponse<String> withdraw(@RequestBody WithdrawRequestDto withdrawRequestDto);
 
     @PutMapping("/api/account/transaction/deposit")
-    ApiResponse<TransactionResponseDto> deposit(@RequestBody DepositRequestDto depositRequestDto);
+    ApiResponse<String> deposit(@RequestBody DepositRequestDto depositRequestDto);
 
     @PutMapping("/api/account/transaction/transfer")
-    ApiResponse<TransactionResponseDto> transfer(@RequestBody TransferRequestDto transferRequestDto);
+    ApiResponse<String> transfer(@RequestBody TransferRequestDto transferRequestDto);
 }

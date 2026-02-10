@@ -29,7 +29,7 @@ public class BalanceServicesImpl implements BalanceServices {
 
     @Override
     @Transactional
-    public TransactionResponseDto withdraw(WithdrawRequestDto withdrawRequestDto) {
+    public String withdraw(WithdrawRequestDto withdrawRequestDto) {
         if(withdrawRequestDto == null)
             throw new NullPointerException("Null request sent!!");
 
@@ -77,19 +77,12 @@ public class BalanceServicesImpl implements BalanceServices {
                         .amount(withdrawRequestDto.getAmount())
                 .build());
 
-        return TransactionResponseDto.builder()
-                .toAccountNumber(null)
-                .fromAccountNumber(account.getAccountNumber())
-                .amount(withdrawRequestDto.getAmount())
-                .transactionType(withdrawRequestDto.getTransactionType())
-                .transactionId(withdrawRequestDto.getTransactionId())
-                .transactionDate(LocalDateTime.now())
-                .build();
+        return "SUCCESS";
     }
 
     @Override
     @Transactional
-    public TransactionResponseDto deposit(DepositRequestDto depositRequestDto) {
+    public String deposit(DepositRequestDto depositRequestDto) {
         if(depositRequestDto == null)
             return null;
 
@@ -98,12 +91,16 @@ public class BalanceServicesImpl implements BalanceServices {
             throw new IllegalArgumentException("Deposit amount must be greater than zero");
 
         if (depositRequestDto.getTransactionId() == null ||
-                depositRequestDto.getTransactionId().isBlank())
+                depositRequestDto.getTransactionId() == 0)
             throw new IllegalArgumentException("Transaction ID is required");
 
         if (transactionRepo.existsByProcessedTransactionId(depositRequestDto.getTransactionId()))
             throw new IllegalArgumentException(
                     "Transaction " + depositRequestDto.getTransactionId() + " has already been processed");
+
+        //check if received JSON body is for different transaction
+        if(depositRequestDto.getTransactionType() != TransactionType.CREDIT)
+            throw new IllegalArgumentException("Invalid Transaction Type for this method!!");
 
         //Check if the Account exists and is Active
         Account account = accountRepo.findByAccountNumber(depositRequestDto.getToAccountNumber())
@@ -120,26 +117,19 @@ public class BalanceServicesImpl implements BalanceServices {
                         .amount(depositRequestDto.getAmount())
                         .build());
 
-        return TransactionResponseDto.builder()
-                .toAccountNumber(account.getAccountNumber())
-                .fromAccountNumber(null)
-                .amount(depositRequestDto.getAmount())
-                .transactionType(TransactionType.CREDIT)
-                .transactionId(depositRequestDto.getTransactionId())
-                .transactionDate(LocalDateTime.now())
-                .build();
+        return "SUCCESS";
     }
 
     @Override
     @Transactional
-    public TransactionResponseDto transfer(TransferRequestDto transferRequestDto) {
+    public String transfer(TransferRequestDto transferRequestDto) {
 
         // 1. Validate request
         if (transferRequestDto == null)
             throw new IllegalArgumentException("Transfer request cannot be null");
         if (transferRequestDto.getAmount() == null || transferRequestDto.getAmount().compareTo(BigDecimal.ZERO) <= 0)
             throw new IllegalArgumentException("Transfer amount must be greater than zero");
-        if (transferRequestDto.getTransactionId() == null || transferRequestDto.getTransactionId().isBlank())
+        if (transferRequestDto.getTransactionId() == null || transferRequestDto.getTransactionId() == 0)
             throw new IllegalArgumentException("Transaction ID is required");
 
         if (transferRequestDto.getTransactionType() != TransactionType.TRANSFER)
@@ -211,16 +201,7 @@ public class BalanceServicesImpl implements BalanceServices {
                         .amount(transferRequestDto.getAmount())
                         .build()
         );
-
-        // 8. Build and return response
-        return TransactionResponseDto.builder()
-                .fromAccountNumber(sender.getAccountNumber())
-                .toAccountNumber(receiver.getAccountNumber())
-                .amount(transferRequestDto.getAmount())
-                .transactionType(TransactionType.TRANSFER)
-                .transactionId(transferRequestDto.getTransactionId())
-                .transactionDate(LocalDateTime.now())
-                .build();
+        return "SUCCESS";
     }
 
 

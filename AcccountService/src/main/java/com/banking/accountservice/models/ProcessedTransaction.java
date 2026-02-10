@@ -14,14 +14,14 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "processed_transaction")
+@Table(name = "processed_transaction" )
 public class ProcessedTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
-    private String processedTransactionId;
+    private Long processedTransactionId;
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
@@ -33,16 +33,3 @@ public class ProcessedTransaction {
     private LocalDate date;
 
 }
-
-
-//Validation first → prevents invalid requests immediately.
-//
-//Idempotency check → ensures repeated requests don’t double-deposit.
-//
-//Pessimistic lock → prevents concurrency issues on balance updates.
-//
-//Account status check → ensures money cannot go into closed/frozen accounts.
-//
-//Atomic balance + transaction save → @Transactional ensures consistency.
-//
-//Audit-friendly → every deposit is saved with transaction ID, type, amount, and account reference.

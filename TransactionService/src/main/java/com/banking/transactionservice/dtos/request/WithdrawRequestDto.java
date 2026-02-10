@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 
 @Data
 public class WithdrawRequestDto {
-    private String toAccountNumber;
+    private String fromAccountNumber;
     private BigDecimal amount;
     private TransactionType transactionType;
-    private String description;
+    private Long transactionId;
 }

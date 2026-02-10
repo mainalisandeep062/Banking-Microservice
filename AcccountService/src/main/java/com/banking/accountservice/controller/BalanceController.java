@@ -16,17 +16,17 @@ public class BalanceController {
     private final BalanceServices balanceServices;
 
     @PutMapping("/withdraw")
-    public ApiResponse<TransactionResponseDto> withdraw(@RequestBody WithdrawRequestDto withdrawRequestDto) {
+    public ApiResponse<String> withdraw(@RequestBody WithdrawRequestDto withdrawRequestDto) {
         return ApiResponse.success(200, "OK", balanceServices.withdraw(withdrawRequestDto));
     }
 
     @PutMapping("/deposit")
-    public ApiResponse<TransactionResponseDto> deposit(@RequestBody DepositRequestDto depositRequestDto) {
+    public ApiResponse<String> deposit(@RequestBody DepositRequestDto depositRequestDto) {
         return ApiResponse.success(200, "OK", balanceServices.deposit(depositRequestDto));
     }
 
     @PutMapping("/transfer")
-    public  ApiResponse<TransactionResponseDto> transfer(@RequestBody TransferRequestDto transferRequestDto) {
+    public  ApiResponse<String> transfer(@RequestBody TransferRequestDto transferRequestDto) {
         return ApiResponse.success(200, "OK", balanceServices.transfer(transferRequestDto));
     }
 }

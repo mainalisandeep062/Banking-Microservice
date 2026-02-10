@@ -20,8 +20,8 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionId;
 
-    private Long fromAccountId;
-    private Long toAccountId;
+    private String fromAccountNumber;
+    private String toAccountNumber;
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
@@ -29,10 +29,11 @@ public class Transaction {
 
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
-    private String description;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime timestamp;
+    private LocalDateTime createdAt;
+
+    private LocalDateTime completedAt;
 
 }

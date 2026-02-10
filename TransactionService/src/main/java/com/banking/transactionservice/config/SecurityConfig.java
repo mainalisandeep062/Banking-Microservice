@@ -1,6 +1,7 @@
 package com.banking.transactionservice.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,11 +17,13 @@ public class SecurityConfig {
 
     private final AuthenticationFilterConfig jwtAuthFilterConfig;
 
-    public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain (HttpSecurity http) {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/api/transaction/**").hasAnyAuthority("USER",  "ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

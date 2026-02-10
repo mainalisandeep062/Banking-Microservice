@@ -10,7 +10,7 @@ public class WithdrawRequestDto {
     private String fromAccountNumber;
     private BigDecimal amount;
     private TransactionType transactionType;
-    private String transactionId;
+    private Long transactionId;
 }
 
 

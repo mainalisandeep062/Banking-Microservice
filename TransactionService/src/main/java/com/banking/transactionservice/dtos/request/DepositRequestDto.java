@@ -9,5 +9,5 @@ public class DepositRequestDto {
     private String toAccountNumber;
     private BigDecimal amount;
     private TransactionType transactionType;
-    private String description;
+    private Long transactionId;
 }
