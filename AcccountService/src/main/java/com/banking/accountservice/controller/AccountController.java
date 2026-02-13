@@ -8,7 +8,9 @@ import com.banking.accountservice.enums.Status;
 import com.banking.accountservice.exception.ApiResponse;
 import com.banking.accountservice.services.AccountServices;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,5 +51,14 @@ public class AccountController {
         return ApiResponse.success(200,
                 "Account Closed Successfully!!",
                 accountServices.closeAccount(email, password, accountNumber));
+    }
+
+    @GetMapping("/account-number/{accountNumber}")
+    public ApiResponse<AccountResponseDto> getAccountByAccountNumber(@PathVariable String accountNumber) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CurrentUser user = (CurrentUser)authentication.getPrincipal();
+        return ApiResponse.success(200,
+                "OK",
+                accountServices.getAccountByAccountNumber(user.userId(), accountNumber));
     }
 }

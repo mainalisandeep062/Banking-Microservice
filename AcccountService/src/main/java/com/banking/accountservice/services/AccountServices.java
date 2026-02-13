@@ -18,4 +18,6 @@ public interface AccountServices {
 
     BalanceResponseDto getBalanceByAccountNumber(Long userId, String accountNumber);
 
+    AccountResponseDto getAccountByAccountNumber(Long aLong, String accountNumber);
+
 }

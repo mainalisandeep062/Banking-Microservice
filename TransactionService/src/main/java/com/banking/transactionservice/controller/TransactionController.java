@@ -1,16 +1,15 @@
 package com.banking.transactionservice.controller;
 
 import com.banking.transactionservice.dtos.TransactionResponseDto;
+import com.banking.transactionservice.dtos.external.HistoryResponseDto;
 import com.banking.transactionservice.dtos.request.DepositRequestDto;
 import com.banking.transactionservice.dtos.request.TransferRequestDto;
 import com.banking.transactionservice.dtos.request.WithdrawRequestDto;
 import com.banking.transactionservice.exception.ApiResponse;
 import com.banking.transactionservice.services.TransactionServices;
+import com.banking.transactionservice.services.impl.HistoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/transaction")
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TransactionController {
 
     private final TransactionServices transactionService;
+    private final HistoryService historyService;
 
     @PutMapping("/withdraw")
     public ApiResponse<TransactionResponseDto> withdraw(@RequestBody WithdrawRequestDto withdrawRequestDto){
@@ -32,6 +32,13 @@ public class TransactionController {
     @PutMapping("/transfer")
     public ApiResponse<TransactionResponseDto> withdraw(@RequestBody TransferRequestDto transferRequestDto){
         return ApiResponse.success(200, "OK", transactionService.transfer(transferRequestDto));
+    }
+
+    @GetMapping("/history")
+    public ApiResponse<HistoryResponseDto> getTransactionHistory(@RequestParam(defaultValue = "0") int pageNumber,
+                                                                 @RequestParam String accountNumber){
+        return ApiResponse.success(200, "OK",
+                historyService.getHistoryByAccountNumber(accountNumber, pageNumber));
     }
 
 }

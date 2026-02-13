@@ -116,6 +116,18 @@ public class AccountServicesImpl implements AccountServices {
                 .build();
     }
 
+    @Override
+    public AccountResponseDto getAccountByAccountNumber(Long userId, String accountNumber) {
+        if(accountNumber==null)
+            return null;
+        Account account = accountRepo.findByAccountNumber(accountNumber)
+                .orElseThrow(() ->new RuntimeException(""));
+
+        if(!userId.equals(account.getUserId()))
+            throw new BadCredentialsException("Only Account holder can Inquire Account Details!!!");
+        return toDto(account, account.getAccountDetails());
+    }
+
     public AccountResponseDto toDto(Account account, AccountDetails accountDetails) {
         if(account == null || accountDetails == null)
             return null;
