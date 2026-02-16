@@ -12,7 +12,7 @@ RUN mvn clean package -DskipTests
 # Stage 2: Runtime image
 FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/app.jar app.jar
 EXPOSE 8083
 # Run the Spring Boot application
 ENTRYPOINT ["java", "-jar", "app.jar"]
