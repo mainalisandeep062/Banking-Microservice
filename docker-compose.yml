@@ -1,0 +1,133 @@
+version: '3.8'
+
+services:
+  # --- SERVICE REGISTRY ---
+  registry-server:
+    build: ./RegistryServer
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+
+  # --- DATABASE FOR TRANSACTION SERVICE ---
+  transaction-db:
+    image: mysql:8.0
+    container_name: transaction-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_transaction
+    ports:
+      - "3307:3306" # Connect via IntelliJ on 3307
+    volumes:
+      - trans-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
+
+  # --- DATABASE FOR ACCOUNT SERVICE ---
+  account-db:
+    image: mysql:8.0
+    container_name: account-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_account
+    ports:
+      - "3308:3306" # Connect via IntelliJ on 3308 (Must be different!)
+    volumes:
+      - account-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
+
+  # --- DATABASE for User Service ---
+  user-db:
+    image: mysql:8.0
+    container_name: user-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_user
+    ports:
+      - "3309:3306" # Connect via IntelliJ on 3308 (Must be different!)
+    volumes:
+      - user-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
+
+  # --- TRANSACTION SERVICE ---
+  transaction-service:
+    build: ./TransactionService
+    container_name: transaction-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      transaction-db:
+        condition: service_healthy # Wait for DB to be READY
+    environment:
+      - DB_URL=jdbc:mysql://transaction-db:3306/db_transaction?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQLDialect
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_URL=http://registry-server:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+
+  # --- ACCOUNT SERVICE ---
+  account-service:
+    build: ./AccountService
+    container_name: account-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      account-db:
+        condition: service_healthy # Wait for DB to be READY
+    environment:
+      - DB_URL=jdbc:mysql://account-db:3306/db_account?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQLDialect
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_URL=http://registry-server:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+
+  # --- USER SERVICE ---
+  user-service:
+    build: ./UserService
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      user-db:
+        condition: service_healthy # Wait for DB to be READY
+    environment:
+      - DB_URL=jdbc:mysql://user-db:3306/db_user?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQLDialect
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_URL=http://registry-server:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+
+  # --- API GATEWAY ---
+  api-gateway:
+    build: ./ApiGateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - registry-server
+      - user-service
+      - account-service
+      - transaction-service
+    environment:
+      - EUREKA_URL=http://registry-server:8761/eureka/
+
+volumes:
+  trans-data:
+  account-data:
+  user-data:
