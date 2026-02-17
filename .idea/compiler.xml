@@ -10,16 +10,7 @@
         <module name="RegistryServer" />
         <module name="ApiGateway" />
       </profile>
-      <profile name="Annotation profile for AcccountService" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
-        </processorPath>
-        <module name="AcccountService" />
-      </profile>
-      <profile name="Annotation profile for UserServices" enabled="true">
+      <profile name="Annotation profile for TransactionService" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -28,17 +19,26 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
         </processorPath>
         <module name="TransactionService" />
-        <module name="UserServices" />
+      </profile>
+      <profile name="Annotation profile for AccountService" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+        </processorPath>
+        <module name="AccountService" />
+        <module name="UserService" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="AcccountService" options="-parameters" />
+      <module name="AccountService" options="-parameters" />
       <module name="ApiGateway" options="-parameters" />
       <module name="RegistryServer" options="-parameters" />
       <module name="TransactionService" options="-parameters" />
-      <module name="UserServices" options="-parameters" />
+      <module name="UserService" options="-parameters" />
       <module name="demo" options="-parameters" />
     </option>
   </component>
