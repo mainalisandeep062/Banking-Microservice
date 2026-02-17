@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.banking</groupId>
-    <artifactId>AcccountService</artifactId>
+    <artifactId>AccountService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>AcccountService</name>
-    <description>AcccountService</description>
+    <name>AccountService</name>
+    <description>AccountService</description>
     <url/>
     <licenses>
         <license/>
@@ -95,12 +95,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.banking</groupId>
-            <artifactId>TransactionService</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
     <dependencyManagement>
