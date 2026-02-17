@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
@@ -49,7 +49,7 @@ public class User {
 
     private Boolean isActive;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(updatable = false)
     private LocalDate createdAt;
     @LastModifiedDate
