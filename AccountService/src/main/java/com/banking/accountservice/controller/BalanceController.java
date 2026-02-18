@@ -1,7 +1,6 @@
 package com.banking.accountservice.controller;
 
 import com.banking.accountservice.dtos.mirror.transaction.DepositRequestDto;
-import com.banking.accountservice.dtos.mirror.transaction.TransactionResponseDto;
 import com.banking.accountservice.dtos.mirror.transaction.TransferRequestDto;
 import com.banking.accountservice.dtos.mirror.transaction.WithdrawRequestDto;
 import com.banking.accountservice.exception.ApiResponse;

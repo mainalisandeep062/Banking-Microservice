@@ -1,7 +1,6 @@
 package com.banking.accountservice.services.impl;
 
 import com.banking.accountservice.dtos.mirror.transaction.DepositRequestDto;
-import com.banking.accountservice.dtos.mirror.transaction.TransactionResponseDto;
 import com.banking.accountservice.dtos.mirror.transaction.TransferRequestDto;
 import com.banking.accountservice.dtos.mirror.transaction.WithdrawRequestDto;
 import com.banking.accountservice.enums.Status;
