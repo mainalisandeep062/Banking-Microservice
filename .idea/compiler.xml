@@ -10,7 +10,17 @@
         <module name="RegistryServer" />
         <module name="ApiGateway" />
       </profile>
-      <profile name="Annotation profile for TransactionService" enabled="true">
+      <profile name="Annotation profile for NotificationService" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+        </processorPath>
+        <module name="AccountService" />
+        <module name="NotificationService" />
+      </profile>
+      <profile name="Annotation profile for UserService" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -19,15 +29,6 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
         </processorPath>
         <module name="TransactionService" />
-      </profile>
-      <profile name="Annotation profile for AccountService" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
-        </processorPath>
-        <module name="AccountService" />
         <module name="UserService" />
       </profile>
     </annotationProcessing>
@@ -36,6 +37,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="AccountService" options="-parameters" />
       <module name="ApiGateway" options="-parameters" />
+      <module name="NotificationService" options="-parameters" />
       <module name="RegistryServer" options="-parameters" />
       <module name="TransactionService" options="-parameters" />
       <module name="UserService" options="-parameters" />
