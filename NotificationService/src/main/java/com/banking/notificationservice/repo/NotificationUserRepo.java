@@ -1,4 +1,11 @@
 package com.banking.notificationservice.repo;
 
-public class NotificationUserRepo {
+import com.banking.notificationservice.entity.NotificationUser;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface NotificationUserRepo extends JpaRepository<NotificationUser, String> {
+
+
 }

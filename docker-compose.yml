@@ -1,6 +1,23 @@
 version: '3.8'
 
 services:
+
+  # --- MESSAGE BROKER ---
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # RabbitMQ message delivery
+      - "15672:15672" # RabbitMQ Management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "check_running" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # --- SERVICE REGISTRY ---
   registry-server:
     build: ./RegistryServer
@@ -81,7 +98,15 @@ services:
     depends_on:
       transaction-db:
         condition: service_healthy # Wait for DB to be READY
+      rabbitmq:
+        condition: service_healthy # Wait for RabbitMQ to be ready
     environment:
+      ### --- RabbitMQ configs ---
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+      ### --- Database configs ---
       - DB_URL=jdbc:mysql://transaction-db:3306/db_transaction?createDatabaseIfNotExist=true&serverTimezone=UTC
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_SHOW_SQL=true
@@ -100,7 +125,15 @@ services:
     depends_on:
       account-db:
         condition: service_healthy # Wait for DB to be READY
+      rabbitmq:
+        condition: service_healthy # Wait for RabbitMQ to be ready
     environment:
+      ### --- RabbitMQ configs ---
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+      ### --- Database configs -=---
       - DB_URL=jdbc:mysql://account-db:3306/db_account?createDatabaseIfNotExist=true&serverTimezone=UTC
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_SHOW_SQL=true
@@ -119,13 +152,22 @@ services:
     depends_on:
       user-db:
         condition: service_healthy # Wait for DB to be READY
+      rabbitmq:
+        condition: service_healthy # Wait for RabbitMQ to be ready
     environment:
+      ### --- RabbitMQ configs ---
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+      ### --- Database Configs -=---
       - DB_URL=jdbc:mysql://user-db:3306/db_user?createDatabaseIfNotExist=true&serverTimezone=UTC
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_SHOW_SQL=true
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQLDialect
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
+      ### --- Eureka Registry server configs ---
       - EUREKA_URL=http://registry-server:8761/eureka/
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
 
@@ -150,15 +192,24 @@ services:
     ports:
       - "8084:8084"
     depends_on:
-      user-db:
+      notification-db:
         condition: service_healthy # Wait for DB to be READY
+      rabbitmq:
+        condition: service_healthy # Wait for RabbitMQ to be ready
     environment:
+      ### --- RabbitMQ configs ---
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+      ### --- Database configs ---
       - DB_URL=jdbc:mysql://notification-db:3306/db_notification?createDatabaseIfNotExist=true&serverTimezone=UTC
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_SHOW_SQL=true
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQLDialect
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
+      ### --- Eureka registry configs ---
       - EUREKA_URL=http://registry-server:8761/eureka/
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
 

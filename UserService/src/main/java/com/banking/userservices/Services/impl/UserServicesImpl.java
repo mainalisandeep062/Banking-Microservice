@@ -3,10 +3,12 @@ package com.banking.userservices.Services.impl;
 import com.banking.userservices.Models.User;
 import com.banking.userservices.Repo.UserRepo;
 import com.banking.userservices.Services.UserServices;
+import com.banking.userservices.dto.UserSyncNotificationDTO;
 import com.banking.userservices.dto.user.UserRequestDto;
 import com.banking.userservices.dto.user.UserResponseDto;
 import com.banking.userservices.dto.user.UserUpdateDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class UserServicesImpl implements UserServices {
 
     private final PasswordEncoder passwordEncoder;
+    private final RabbitTemplate rabbitTemplate;
     private final UserRepo repo;
 
     @Override
@@ -31,6 +34,18 @@ public class UserServicesImpl implements UserServices {
                 .isActive(true)
                 .build();
         repo.save(user);
+
+        UserSyncNotificationDTO syncData = UserSyncNotificationDTO.builder()
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .fullName(user.getFirstName() + " " + user.getLastName())
+                .build();
+
+        rabbitTemplate.convertAndSend(
+                "banking.direct.exchange",
+                "user.sync.key",
+                syncData
+        );
         return toDto(user);
     }
 
