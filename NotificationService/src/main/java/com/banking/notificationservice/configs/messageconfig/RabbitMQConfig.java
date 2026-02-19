@@ -16,6 +16,8 @@ public class RabbitMQConfig {
     public static final String EXCHANGE = "banking.direct.exchange";
     public static final String NOTIFICATION_QUEUE = "notification.queue";
     public static final String NOTIFICATION_ROUTING_KEY = "notification.key";
+    public static final String USER_SYNC_QUEUE = "user.sync.queue";
+    public static final String USER_SYNC_ROUTING_KEY = "user.sync.key";
 
     // 1. Define the Exchange
     @Bean
@@ -54,4 +56,8 @@ public class RabbitMQConfig {
         rabbitTemplate.setMessageConverter(jsonMessageConverter());
         return rabbitTemplate;
     }
+
+    @Bean public Queue userSyncQueue() {return new Queue(USER_SYNC_QUEUE, true);}
+    @Bean public Binding userSyncBinding(Queue userSyncQueue, DirectExchange exchange) {
+            return BindingBuilder.bind(userSyncQueue).to(exchange).with(USER_SYNC_ROUTING_KEY);}
 }
