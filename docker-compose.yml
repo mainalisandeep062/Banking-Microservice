@@ -150,7 +150,7 @@ services:
     ports:
       - "8084:8084"
     depends_on:
-      user-db:
+      notification-db:
         condition: service_healthy # Wait for DB to be READY
     environment:
       - DB_URL=jdbc:mysql://notification-db:3306/db_notification?createDatabaseIfNotExist=true&serverTimezone=UTC
