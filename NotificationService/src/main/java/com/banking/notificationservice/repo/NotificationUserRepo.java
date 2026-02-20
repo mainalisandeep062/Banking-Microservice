@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NotificationUserRepo extends JpaRepository<NotificationUser, String> {
 
-
+    boolean existsByEmail(String email);
 }
