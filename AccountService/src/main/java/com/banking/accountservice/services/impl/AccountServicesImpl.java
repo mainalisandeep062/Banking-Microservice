@@ -4,6 +4,7 @@ import com.banking.accountservice.clientFeign.UserClient;
 import com.banking.accountservice.config.CurrentUser;
 import com.banking.accountservice.dtos.AccountRequestDto;
 import com.banking.accountservice.dtos.AccountResponseDto;
+import com.banking.accountservice.dtos.AccountSyncNotificationDto;
 import com.banking.accountservice.dtos.BalanceResponseDto;
 import com.banking.accountservice.dtos.mirror.user.UserResponseDto;
 import com.banking.accountservice.enums.Status;
@@ -14,6 +15,7 @@ import com.banking.accountservice.repo.AccountRepo;
 import com.banking.accountservice.services.AccountServices;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,8 +30,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccountServicesImpl implements AccountServices {
 
-    private final AccountRepo accountRepo;
     private final AccountDetailsRepo accountDetailsRepo;
+    private final RabbitTemplate rabbitTemplate;
+    private final AccountRepo accountRepo;
     private final UserClient userClient;
 
     @Transactional
@@ -40,7 +43,7 @@ public class AccountServicesImpl implements AccountServices {
         boolean userExists = userClient.checkIfUserExists(accountRequestDto.getUserId()).getBody();
 
         if (!userExists) {
-            throw new RuntimeException("Cannot create account: User with ID " + accountRequestDto.getUserId() + " not found!");
+            throw new RuntimeException("Failure Creating Account!! User with ID " + accountRequestDto.getUserId() + " not found!");
         }
         Account account = Account.builder()
                 .accountNumber(generateAccountNumber())
@@ -52,6 +55,19 @@ public class AccountServicesImpl implements AccountServices {
                 .maturityDate(accountRequestDto.getMaturityDate())
                 .build();
         accountRepo.save(account);
+
+        AccountSyncNotificationDto syncDto = AccountSyncNotificationDto.builder()
+                .accountId(account.getAccountId())
+                .userId(account.getUserId())
+                .accountNumber(account.getAccountNumber())
+                .accountType(account.getAccountType())
+                .notificationType("ACCOUNT_CREATED")
+                .build();
+        rabbitTemplate.convertAndSend(
+                "banking.direct.exchange",
+                "account.sync.key",
+                syncDto);
+
         AccountDetails details =AccountDetails.builder()
                         .account(account)
                         .currency(accountRequestDto.getCurrency())
@@ -85,6 +101,17 @@ public class AccountServicesImpl implements AccountServices {
         account.setStatus(Status.CLOSED);
 
         accountRepo.save(account);
+
+        AccountSyncNotificationDto syncDto = AccountSyncNotificationDto.builder()
+                .accountId(account.getAccountId())
+                .userId(account.getUserId())
+                .accountNumber(account.getAccountNumber())
+                .accountType(account.getAccountType())
+                .notificationType("ACCOUNT_CLOSED")
+                .build();
+        rabbitTemplate.convertAndSend("banking.direct.exchange",
+                "account.sync.key",
+                syncDto);
 
         return toDto(account,  account.getAccountDetails());
     }

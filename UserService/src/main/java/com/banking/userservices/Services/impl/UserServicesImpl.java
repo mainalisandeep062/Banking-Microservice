@@ -23,6 +23,9 @@ public class UserServicesImpl implements UserServices {
 
     @Override
     public UserResponseDto registerUser(UserRequestDto userRequest) {
+        if(repo.existsByEmail(userRequest.getEmail())) {
+            throw new RuntimeException("User With this email already exists!!!");
+        }
         User user = User.builder()
                 .firstName(userRequest.getFirstName())
                 .lastName(userRequest.getLastName())

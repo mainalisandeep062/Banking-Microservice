@@ -6,6 +6,7 @@ public enum NotificationType {
     TRANSFER_SENT,
     TRANSFER_RECEIVED,
     ACCOUNT_CREATED,
+    ACCOUNT_CLOSED,
     SECURITY_ALERT,
     USER_REGISTERED
 }

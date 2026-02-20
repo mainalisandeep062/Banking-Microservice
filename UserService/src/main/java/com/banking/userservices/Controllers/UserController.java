@@ -20,8 +20,8 @@ public class UserController {
         return ApiResponse.success(200, "ok", userServices.fetchMyProfile(email));
     }
 
-    @GetMapping
-    public ApiResponse<UserResponseDto> getUserById(@RequestParam Long userId) {
+    @GetMapping("/{userId}")
+    public ApiResponse<UserResponseDto> getUserById(@PathVariable Long userId) {
         return ApiResponse.success(200, "OK", userServices.getUserById(userId));
     }
 
