@@ -4,8 +4,13 @@ import com.banking.notificationservice.entity.NotificationUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface NotificationUserRepo extends JpaRepository<NotificationUser, String> {
 
+    boolean existsByEmailOrUserId(String email, Long id);
+
+    Optional<NotificationUser> findByUserId(Long userId);
 
 }

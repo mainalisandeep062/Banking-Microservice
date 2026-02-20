@@ -18,6 +18,8 @@ public class RabbitMQConfig {
     public static final String NOTIFICATION_ROUTING_KEY = "notification.key";
     public static final String USER_SYNC_QUEUE = "user.sync.queue";
     public static final String USER_SYNC_ROUTING_KEY = "user.sync.key";
+    public static final String ACCOUNT_SYNC_QUEUE = "account.sync.queue";
+    public static final String ACCOUNT_SYNC_ROUTING_KEY = "account.sync.key";
 
     // 1. Define the Exchange
     @Bean
@@ -60,4 +62,8 @@ public class RabbitMQConfig {
     @Bean public Queue userSyncQueue() {return new Queue(USER_SYNC_QUEUE, true);}
     @Bean public Binding userSyncBinding(Queue userSyncQueue, DirectExchange exchange) {
             return BindingBuilder.bind(userSyncQueue).to(exchange).with(USER_SYNC_ROUTING_KEY);}
+
+    @Bean public Queue accountSyncQueue() {return new Queue(ACCOUNT_SYNC_QUEUE, true);}
+    @Bean public Binding accountSyncBinding(Queue accountSyncQueue, DirectExchange exchange) {
+        return BindingBuilder.bind(accountSyncQueue).to(exchange).with(ACCOUNT_SYNC_ROUTING_KEY);}
 }

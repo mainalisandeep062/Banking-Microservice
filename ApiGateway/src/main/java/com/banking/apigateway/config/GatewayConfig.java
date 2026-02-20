@@ -39,6 +39,13 @@ public class GatewayConfig {
                         .route(path("/api/transaction/**"), http())
                         .filter(authFilter.apply())
                         .filter(lb("TRANSACTION-SERVICE"))
+                        .build())
+
+                // 5. SECURED ROUTE: Notification Service
+                .and(route()
+                        .route(path("/api/notification/**"), http())
+                        .filter(authFilter.apply())
+                        .filter(lb("NOTIFICATION-SERVICE"))
                         .build());
     }
 }

@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface UserRepo extends JpaRepository<User,Long> {
     @Query(
             value ="""
-                        select u.* 
+                        select u.*
                         from `user` u
                         where u.email=:email
                     """, nativeQuery = true)
@@ -30,5 +30,7 @@ public interface UserRepo extends JpaRepository<User,Long> {
                     """, nativeQuery = true)
     int updateUserLastLogin(@Param("id")Long id);
 
-    Boolean existsByUserId(Long email);
+    Boolean existsByUserId(Long userId);
+
+    Boolean existsByEmail(String email);
 }
