@@ -23,6 +23,8 @@ public class Notification {
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
     private NotificationUser recipient;
 
+    private String reference;
+
     @Column(nullable = false)
     private String title;
 

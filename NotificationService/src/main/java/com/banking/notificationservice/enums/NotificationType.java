@@ -1,8 +1,8 @@
 package com.banking.notificationservice.enums;
 
 public enum NotificationType {
-    DEPOSIT,
-    WITHDRAW,
+    CREDIT,
+    DEBIT,
     TRANSFER_SENT,
     TRANSFER_RECEIVED,
     ACCOUNT_CREATED,

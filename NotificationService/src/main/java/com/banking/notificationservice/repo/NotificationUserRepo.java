@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface NotificationUserRepo extends JpaRepository<NotificationUser, String> {
 
-    boolean existsByEmailOrUserId(String email, Long id);
+    boolean existsByEmail(String email);
 
     Optional<NotificationUser> findByUserId(Long userId);
 
