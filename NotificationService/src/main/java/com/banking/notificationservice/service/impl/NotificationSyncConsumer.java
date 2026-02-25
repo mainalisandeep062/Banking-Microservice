@@ -102,7 +102,7 @@ public class NotificationSyncConsumer {
                         recipient.getEmail(),
                         "/queue/notification",
                         dto);
-                log.info("Successfully sent account created message: {}", recipient.getEmail());
+                log.info("Successfully sent account created/closed message: {}", recipient.getEmail());
 
             //Tell RabbitMQ to delete the message from the queue
             channel.basicAck(tag, false);

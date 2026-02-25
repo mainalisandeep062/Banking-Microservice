@@ -1,6 +1,6 @@
 package com.banking.accountservice.enums;
 
- public enum TransactionType {
+public enum TransactionType {
     CREDIT,
     DEBIT,
     TRANSFER

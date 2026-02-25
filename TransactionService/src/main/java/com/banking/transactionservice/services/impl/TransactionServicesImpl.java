@@ -11,6 +11,7 @@ import com.banking.transactionservice.enums.TransactionStatus;
 import com.banking.transactionservice.repo.TransactionRepo;
 import com.banking.transactionservice.services.TransactionServices;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionServicesImpl implements TransactionServices {
 
     private final TransactionRepo transactionRepo;
@@ -87,8 +89,10 @@ public class TransactionServicesImpl implements TransactionServices {
         dto.setTransactionId(transaction.getTransactionId());
 
         try {
+            log.info("Reached the try block");
             TransactionResponseDto response =
                     accountClient.deposit(dto).getBody();
+            log.info("passed feign response part!!");
 
             if (response == null) {
                 throw new RuntimeException("Account service returned null response");

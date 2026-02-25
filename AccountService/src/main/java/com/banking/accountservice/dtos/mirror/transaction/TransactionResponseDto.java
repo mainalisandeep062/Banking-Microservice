@@ -2,14 +2,18 @@ package com.banking.accountservice.dtos.mirror.transaction;
 
 import com.banking.accountservice.enums.TransactionStatus;
 import com.banking.accountservice.enums.TransactionType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TransactionResponseDto implements Serializable {
     private Long transactionId;
     private String toAccountNumber;
