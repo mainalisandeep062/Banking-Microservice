@@ -35,7 +35,6 @@ public class TransactionServicesImpl implements TransactionServices {
 
         Transaction transaction = Transaction.builder()
                 .fromAccountNumber(dto.getFromAccountNumber())
-                .fromUserId(dto.getFromUserId())
                 .transactionType(dto.getTransactionType())
                 .amount(dto.getAmount())
                 .status(TransactionStatus.PENDING)
@@ -47,11 +46,10 @@ public class TransactionServicesImpl implements TransactionServices {
         try {
             TransactionResponseDto response =
                     accountClient.withdraw(dto).getBody();
-
             if (response == null) {
                 throw new RuntimeException("Account service returned null response");
             }
-
+            transaction.setFromUserId(response.getFromUserId());
             transaction.setStatus(TransactionStatus.SUCCESS);
             transaction.setCompletedAt(LocalDateTime.now());
 
@@ -79,7 +77,6 @@ public class TransactionServicesImpl implements TransactionServices {
 
         Transaction transaction = Transaction.builder()
                 .toAccountNumber(dto.getToAccountNumber())
-                .toUserId(dto.getToUserId())
                 .transactionType(dto.getTransactionType())
                 .amount(dto.getAmount())
                 .status(TransactionStatus.PENDING)
@@ -92,12 +89,11 @@ public class TransactionServicesImpl implements TransactionServices {
             log.info("Reached the try block");
             TransactionResponseDto response =
                     accountClient.deposit(dto).getBody();
-            log.info("passed feign response part!!");
 
             if (response == null) {
                 throw new RuntimeException("Account service returned null response");
             }
-
+            transaction.setToUserId(response.getToUserId());
             transaction.setStatus(TransactionStatus.SUCCESS);
             transaction.setCompletedAt(LocalDateTime.now());
 
@@ -125,9 +121,7 @@ public class TransactionServicesImpl implements TransactionServices {
 
         Transaction transaction = Transaction.builder()
                 .fromAccountNumber(dto.getFromAccountNumber())
-                .fromUserId(dto.getFromUserId())
                 .toAccountNumber(dto.getToAccountNumber())
-                .toUserId(dto.getToUserId())
                 .transactionType(dto.getTransactionType())
                 .amount(dto.getAmount())
                 .status(TransactionStatus.PENDING)
@@ -143,7 +137,8 @@ public class TransactionServicesImpl implements TransactionServices {
             if (response == null) {
                 throw new RuntimeException("Account service returned null response");
             }
-
+            transaction.setFromUserId(response.getFromUserId());
+            transaction.setToUserId(response.getToUserId());
             transaction.setStatus(TransactionStatus.SUCCESS);
             transaction.setCompletedAt(LocalDateTime.now());
 

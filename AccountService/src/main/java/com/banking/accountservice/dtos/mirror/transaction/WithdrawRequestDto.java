@@ -11,7 +11,6 @@ public class WithdrawRequestDto {
     private BigDecimal amount;
     private TransactionType transactionType;
     private Long transactionId;
-    private  Long fromUserId;
 }
 
 

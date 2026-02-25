@@ -10,5 +10,4 @@ public class DepositRequestDto {
     private BigDecimal amount;
     private TransactionType transactionType;
     private Long transactionId;
-    private Long toUserId;
 }

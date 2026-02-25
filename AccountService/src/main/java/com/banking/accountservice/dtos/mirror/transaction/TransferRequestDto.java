@@ -13,6 +13,4 @@ public class TransferRequestDto{
     private BigDecimal amount;
     private TransactionType transactionType;
     private Long transactionId;
-    private Long toUserId;
-    private Long fromUserId;
 }
