@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TransactionResponseDto {
     private Long transactionId;
     private String toAccountNumber;
