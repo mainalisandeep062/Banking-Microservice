@@ -11,5 +11,4 @@ public class DepositRequestDto {
     private String toAccountNumber;
     private TransactionType transactionType;
     private Long transactionId;
-    private Long toUserId;
 }

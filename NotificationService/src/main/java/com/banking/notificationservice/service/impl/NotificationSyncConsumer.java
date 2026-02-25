@@ -115,7 +115,7 @@ public class NotificationSyncConsumer {
 
     @RabbitListener(queues = "transaction.sync.queue")
     public void consumeTransactionSync(TransactionNotificationDto dto, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
-        log.info("Processing new Transaction Notification!!");
+        log.info("Processing new Transaction Notification. From: {}", dto);
          try{
             if (dto.getTransactionType().equals(TransactionType.TRANSFER)) {
                 NotificationUser receiver = userRepo.findByUserId(dto.getToUserId())
@@ -156,7 +156,7 @@ public class NotificationSyncConsumer {
                 notificationRepo.save(Notification.builder()
                         .isRead(false)
                         .title("The money was successfully deposited!!")
-                        .message(dto.getAmount() + " was transferred to " + dto.getToAccountNumber() + " successfully! ")
+                        .message(dto.getAmount() + " was Deposited to Account: " + dto.getToAccountNumber() + " successfully! ")
                         .type(NotificationType.CREDIT)
                         .reference("Account number: " + dto.getToAccountNumber())
                         .recipient(user)
@@ -173,9 +173,9 @@ public class NotificationSyncConsumer {
 
                 notificationRepo.save(Notification.builder()
                         .isRead(false)
-                        .title("The money was successfully deposited!!")
-                        .message(dto.getAmount() + " was transferred to " + dto.getFromAccountNumber() + " successfully! ")
-                        .type(NotificationType.CREDIT)
+                        .title("The money was successfully Withdrawn!!")
+                        .message(dto.getAmount() + " was Withdrawn from Account: " + dto.getFromAccountNumber() + " successfully! ")
+                        .type(NotificationType.DEBIT)
                         .reference("Account number: " + dto.getFromAccountNumber())
                         .recipient(user)
                         .build());
