@@ -11,11 +11,14 @@ import java.time.LocalDateTime;
 @Builder
 public class TransactionResponseDto {
     private Long transactionId;
-    private String fromAccountNumber;
     private String toAccountNumber;
+    private Long toUserId;
+    private String fromAccountNumber;
+    private Long fromUserId;
     private BigDecimal amount;
-    private TransactionStatus status;
     private TransactionType transactionType;
+    private TransactionStatus status;
+
     private LocalDateTime createdAt;
     private LocalDateTime completedAt;
 }

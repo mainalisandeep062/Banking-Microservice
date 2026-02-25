@@ -22,6 +22,8 @@ public class Transaction {
 
     private String fromAccountNumber;
     private String toAccountNumber;
+    private Long fromUserId;
+    private Long toUserId;
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
