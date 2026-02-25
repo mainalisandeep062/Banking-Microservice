@@ -1,9 +1,11 @@
 package com.banking.accountservice.services.impl;
 
 import com.banking.accountservice.dtos.mirror.transaction.DepositRequestDto;
+import com.banking.accountservice.dtos.mirror.transaction.TransactionResponseDto;
 import com.banking.accountservice.dtos.mirror.transaction.TransferRequestDto;
 import com.banking.accountservice.dtos.mirror.transaction.WithdrawRequestDto;
 import com.banking.accountservice.enums.Status;
+import com.banking.accountservice.enums.TransactionStatus;
 import com.banking.accountservice.enums.TransactionType;
 import com.banking.accountservice.models.Account;
 import com.banking.accountservice.models.ProcessedTransaction;
@@ -28,7 +30,7 @@ public class BalanceServicesImpl implements BalanceServices {
 
     @Override
     @Transactional
-    public String withdraw(WithdrawRequestDto withdrawRequestDto) {
+    public TransactionResponseDto withdraw(WithdrawRequestDto withdrawRequestDto) {
         if(withdrawRequestDto == null)
             throw new NullPointerException("Null request sent!!");
 
@@ -76,12 +78,21 @@ public class BalanceServicesImpl implements BalanceServices {
                         .amount(withdrawRequestDto.getAmount())
                 .build());
 
-        return "SUCCESS";
+        return TransactionResponseDto.builder()
+                .transactionId(withdrawRequestDto.getTransactionId())
+                .toAccountNumber(null)
+                .toUserId(null)
+                .fromAccountNumber(withdrawRequestDto.getFromAccountNumber())
+                .fromUserId(withdrawRequestDto.getFromUserId())
+                .amount(withdrawRequestDto.getAmount())
+                .transactionType(withdrawRequestDto.getTransactionType())
+                .status(TransactionStatus.SUCCESS)
+                .build();
     }
 
     @Override
     @Transactional
-    public String deposit(DepositRequestDto depositRequestDto) {
+    public TransactionResponseDto deposit(DepositRequestDto depositRequestDto) {
         if(depositRequestDto == null)
             return null;
 
@@ -116,12 +127,21 @@ public class BalanceServicesImpl implements BalanceServices {
                         .amount(depositRequestDto.getAmount())
                         .build());
 
-        return "SUCCESS";
+        return TransactionResponseDto.builder()
+                .transactionId(depositRequestDto.getTransactionId())
+                .toAccountNumber(depositRequestDto.getToAccountNumber())
+                .toUserId(depositRequestDto.getToUserId())
+                .fromAccountNumber(null)
+                .fromUserId(null)
+                .amount(depositRequestDto.getAmount())
+                .transactionType(depositRequestDto.getTransactionType())
+                .status(TransactionStatus.SUCCESS)
+                .build();
     }
 
     @Override
     @Transactional
-    public String transfer(TransferRequestDto transferRequestDto) {
+    public TransactionResponseDto transfer(TransferRequestDto transferRequestDto) {
 
         // 1. Validate request
         if (transferRequestDto == null)
@@ -200,7 +220,16 @@ public class BalanceServicesImpl implements BalanceServices {
                         .amount(transferRequestDto.getAmount())
                         .build()
         );
-        return "SUCCESS";
+        return TransactionResponseDto.builder()
+                .transactionId(transferRequestDto.getTransactionId())
+                .toAccountNumber(transferRequestDto.getToAccountNumber())
+                .toUserId(transferRequestDto.getToUserId())
+                .fromAccountNumber(transferRequestDto.getFromAccountNumber())
+                .fromUserId(transferRequestDto.getFromUserId())
+                .amount(transferRequestDto.getAmount())
+                .transactionType(transferRequestDto.getTransactionType())
+                .status(TransactionStatus.SUCCESS)
+                .build();
     }
 
 

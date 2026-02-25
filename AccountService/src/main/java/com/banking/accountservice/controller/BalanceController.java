@@ -1,6 +1,7 @@
 package com.banking.accountservice.controller;
 
 import com.banking.accountservice.dtos.mirror.transaction.DepositRequestDto;
+import com.banking.accountservice.dtos.mirror.transaction.TransactionResponseDto;
 import com.banking.accountservice.dtos.mirror.transaction.TransferRequestDto;
 import com.banking.accountservice.dtos.mirror.transaction.WithdrawRequestDto;
 import com.banking.accountservice.exception.ApiResponse;
@@ -15,17 +16,17 @@ public class BalanceController {
     private final BalanceServices balanceServices;
 
     @PutMapping("/withdraw")
-    public ApiResponse<String> withdraw(@RequestBody WithdrawRequestDto withdrawRequestDto) {
+    public ApiResponse<TransactionResponseDto> withdraw(@RequestBody WithdrawRequestDto withdrawRequestDto) {
         return ApiResponse.success(200, "OK", balanceServices.withdraw(withdrawRequestDto));
     }
 
     @PutMapping("/deposit")
-    public ApiResponse<String> deposit(@RequestBody DepositRequestDto depositRequestDto) {
+    public ApiResponse<TransactionResponseDto> deposit(@RequestBody DepositRequestDto depositRequestDto) {
         return ApiResponse.success(200, "OK", balanceServices.deposit(depositRequestDto));
     }
 
     @PutMapping("/transfer")
-    public  ApiResponse<String> transfer(@RequestBody TransferRequestDto transferRequestDto) {
+    public  ApiResponse<TransactionResponseDto> transfer(@RequestBody TransferRequestDto transferRequestDto) {
         return ApiResponse.success(200, "OK", balanceServices.transfer(transferRequestDto));
     }
 }
