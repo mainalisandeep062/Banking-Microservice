@@ -21,14 +21,20 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-//                        .requestMatchers("/api/account/balance/**").hasAuthority("SERVICE")
+                        .requestMatchers(
+                                "/v3/api-docs",
+                                "/ws-notifications/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/static/**"
+                        ).permitAll()
                         .requestMatchers("/api/account/**").hasAnyAuthority("ADMIN", "USER")
                         .anyRequest().authenticated() // Secure everything else
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 }

@@ -21,8 +21,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-//                        .requestMatchers("/api/account/balance/**").hasAuthority("SERVICE")
+                        .requestMatchers(
+                                "/v3/api-docs",
+                                "/ws-notifications/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/static/**"
+                        ).permitAll()
                         .requestMatchers("/api/notification/**").hasAnyAuthority("ADMIN", "USER")
                         .anyRequest().authenticated() // Secure everything else
                 )

@@ -23,7 +23,9 @@ public class HistoryService {
         AccountResponseDto feignResponse = accountClient.getAccountByAccountNumber(accountNumber).getBody();
 
         Pageable pageable = PageRequest.of(pageNumber, 10);
-        Page<TransactionResponseDto> transactions = transactionRepo.findTransactionByAccount(accountNumber, pageable).map(this::toDto);
+        Page<TransactionResponseDto> transactions = transactionRepo
+                .findTransactionByAccount(accountNumber, pageable)
+                .map(this::toDto);
 
         return HistoryResponseDto.builder()
                 .accountNumber(feignResponse.getAccountNumber())

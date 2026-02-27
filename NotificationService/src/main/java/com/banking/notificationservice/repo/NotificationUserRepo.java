@@ -7,10 +7,12 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface NotificationUserRepo extends JpaRepository<NotificationUser, String> {
+public interface NotificationUserRepo extends JpaRepository<NotificationUser, Long> {
 
     boolean existsByEmail(String email);
 
     Optional<NotificationUser> findByUserId(Long userId);
+
+    Optional<NotificationUser> findByEmail(String email);
 
 }
