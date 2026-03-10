@@ -8,6 +8,7 @@ import com.banking.userservices.dto.user.UserRequestDto;
 import com.banking.userservices.dto.user.UserResponseDto;
 import com.banking.userservices.dto.user.UserUpdateDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServicesImpl implements UserServices {
 
     private final PasswordEncoder passwordEncoder;
@@ -38,17 +40,21 @@ public class UserServicesImpl implements UserServices {
                 .build();
         repo.save(user);
 
-        UserSyncNotificationDTO syncData = UserSyncNotificationDTO.builder()
-                .userId(user.getUserId())
-                .email(user.getEmail())
-                .fullName(user.getFirstName() + " " + user.getLastName())
-                .build();
+        try{
+            UserSyncNotificationDTO syncData = UserSyncNotificationDTO.builder()
+                    .userId(user.getUserId())
+                    .email(user.getEmail())
+                    .fullName(user.getFirstName() + " " + user.getLastName())
+                    .build();
 
-        rabbitTemplate.convertAndSend(
-                "banking.direct.exchange",
-                "user.sync.key",
-                syncData
-        );
+            rabbitTemplate.convertAndSend(
+                    "banking.direct.exchange",
+                    "user.sync.key",
+                    syncData
+            );
+        }catch (Exception ex){
+            log.error("Failed to send user sync message: {}", ex.getMessage());
+        }
         return toDto(user);
     }
 

@@ -10,6 +10,7 @@ import com.banking.transactionservice.entities.Transaction;
 import com.banking.transactionservice.enums.TransactionStatus;
 import com.banking.transactionservice.repo.TransactionRepo;
 import com.banking.transactionservice.services.TransactionServices;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -27,6 +28,7 @@ public class TransactionServicesImpl implements TransactionServices {
     private final RabbitTemplate rabbitTemplate;
 
     @Override
+    @Transactional
     public TransactionResponseDto withdraw(WithdrawRequestDto dto) {
 
         if (dto == null) {
@@ -63,12 +65,18 @@ public class TransactionServicesImpl implements TransactionServices {
         }
 
         Transaction savedTransaction = transactionRepo.save(transaction);
-        sendTransactionNotification(savedTransaction);
+        try {
+            sendTransactionNotification(savedTransaction);
+        }catch (Exception ex) {
+            log.error("Failed to send withdraw notification for transaction ID: {}. Error: {}",
+                    savedTransaction.getTransactionId(), ex.getMessage());
+        }
 
         return toDto(savedTransaction);
     }
 
     @Override
+    @Transactional
     public TransactionResponseDto deposit(DepositRequestDto dto) {
 
         if (dto == null) {
@@ -107,12 +115,19 @@ public class TransactionServicesImpl implements TransactionServices {
         }
 
         Transaction savedTransaction = transactionRepo.save(transaction);
-        sendTransactionNotification(savedTransaction);
+
+        try{
+            sendTransactionNotification(savedTransaction);
+        } catch(Exception ex){
+            log.error("Failed to send deposit notification for transaction ID: {}. Error: {}",
+                    savedTransaction.getTransactionId(), ex.getMessage());
+        }
 
         return toDto(savedTransaction);
     }
 
     @Override
+    @Transactional
     public TransactionResponseDto transfer(TransferRequestDto dto) {
 
         if (dto == null) {
@@ -152,7 +167,15 @@ public class TransactionServicesImpl implements TransactionServices {
         }
 
         Transaction savedTransaction = transactionRepo.save(transaction);
-        sendTransactionNotification(savedTransaction);
+        log.info("Transaction saved with ID: {}", savedTransaction.getTransactionId());
+
+        try{
+            sendTransactionNotification(savedTransaction);
+        }catch(Exception ex){
+            log.error("Failed to send transfer notification for transaction ID: {}. Error: {}",
+                    savedTransaction.getTransactionId(), ex.getMessage());
+        }
+        log.info("Transaction notification sent for ID: {}", savedTransaction.getTransactionId());
 
         return toDto(savedTransaction);
     }

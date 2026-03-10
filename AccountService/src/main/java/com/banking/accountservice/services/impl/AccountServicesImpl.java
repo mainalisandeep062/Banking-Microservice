@@ -15,6 +15,7 @@ import com.banking.accountservice.repo.AccountRepo;
 import com.banking.accountservice.services.AccountServices;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class AccountServicesImpl implements AccountServices {
 
     private final AccountDetailsRepo accountDetailsRepo;
@@ -56,17 +58,21 @@ public class AccountServicesImpl implements AccountServices {
                 .build();
         accountRepo.save(account);
 
-        AccountSyncNotificationDto syncDto = AccountSyncNotificationDto.builder()
-                .accountId(account.getAccountId())
-                .userId(account.getUserId())
-                .accountNumber(account.getAccountNumber())
-                .accountType(account.getAccountType())
-                .notificationType("ACCOUNT_CREATED")
-                .build();
-        rabbitTemplate.convertAndSend(
-                "banking.direct.exchange",
-                "account.sync.key",
-                syncDto);
+        try {
+            AccountSyncNotificationDto syncDto = AccountSyncNotificationDto.builder()
+                    .accountId(account.getAccountId())
+                    .userId(account.getUserId())
+                    .accountNumber(account.getAccountNumber())
+                    .accountType(account.getAccountType())
+                    .notificationType("ACCOUNT_CREATED")
+                    .build();
+            rabbitTemplate.convertAndSend(
+                    "banking.direct.exchange",
+                    "account.sync.key",
+                    syncDto);
+        } catch (Exception ex) {
+            log.error("Failed to send account creation notification: {}", ex.getMessage());
+        }
 
         AccountDetails details =AccountDetails.builder()
                         .account(account)
@@ -102,16 +108,20 @@ public class AccountServicesImpl implements AccountServices {
 
         accountRepo.save(account);
 
-        AccountSyncNotificationDto syncDto = AccountSyncNotificationDto.builder()
-                .accountId(account.getAccountId())
-                .userId(account.getUserId())
-                .accountNumber(account.getAccountNumber())
-                .accountType(account.getAccountType())
-                .notificationType("ACCOUNT_CLOSED")
-                .build();
-        rabbitTemplate.convertAndSend("banking.direct.exchange",
-                "account.sync.key",
-                syncDto);
+        try{
+            AccountSyncNotificationDto syncDto = AccountSyncNotificationDto.builder()
+                    .accountId(account.getAccountId())
+                    .userId(account.getUserId())
+                    .accountNumber(account.getAccountNumber())
+                    .accountType(account.getAccountType())
+                    .notificationType("ACCOUNT_CLOSED")
+                    .build();
+            rabbitTemplate.convertAndSend("banking.direct.exchange",
+                    "account.sync.key",
+                    syncDto);
+        }catch(Exception ex){
+            log.error("Failed to send account closure notification: {}", ex.getMessage());
+        }
 
         return toDto(account,  account.getAccountDetails());
     }

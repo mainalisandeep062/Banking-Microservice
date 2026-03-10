@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationDto {
-    private Integer id;
+    private Long id;
     private String title;
     private String message;
     private NotificationType type;

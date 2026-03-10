@@ -75,11 +75,11 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="notification_service@localhost" uuid="cdc3c61c-a215-4547-af1e-21107922624c">
+    <data-source source="LOCAL" name="db_notification@localhost" uuid="5bdba165-bc37-4594-838e-4fc30056f5f4">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/notification_service</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3310/db_notification</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
@@ -87,11 +87,11 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="db_notification@localhost" uuid="5bdba165-bc37-4594-838e-4fc30056f5f4">
+    <data-source source="LOCAL" name="notification_service@localhost" uuid="f9f7caa2-fe1b-4204-b9c4-9f626e8e7c67">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3310/db_notification</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/notification_service</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
