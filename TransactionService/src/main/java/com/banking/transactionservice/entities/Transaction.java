@@ -14,7 +14,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table
+@Table(indexes = {
+        @Index(name = "idx_txn_from_account_and_createdAt", columnList = "fromAccountNumber, createdAt"),
+        @Index(name = "idx_txn_to_account_and_createdAt", columnList = "toAccountNumber, createdAt")
+})
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
