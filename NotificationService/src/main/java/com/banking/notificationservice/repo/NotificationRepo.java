@@ -23,7 +23,7 @@ public interface NotificationRepo extends JpaRepository<Notification, Integer> {
     Optional<Notification> findById(Integer id);
 
     @Modifying
-    @Query("UPDATE Notification n SET n.read = true WHERE n.recipient = :user AND n.read = false")
+    @Query("UPDATE Notification n SET n.isRead = true WHERE n.recipient = :user AND n.isRead = false")
     int markAllAsReadByRecipient(@Param("user") NotificationUser user);
 
 }

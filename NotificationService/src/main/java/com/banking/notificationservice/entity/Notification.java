@@ -38,10 +38,18 @@ public class Notification {
     private NotificationType type;
 
     @Column(name = "is_read")
-    private boolean read = false;
+    private boolean isRead = false;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
 }
+
+
+
+
+
+
+
+

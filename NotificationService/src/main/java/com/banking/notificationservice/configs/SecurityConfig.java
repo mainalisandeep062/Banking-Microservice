@@ -29,7 +29,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/static/**"
                         ).permitAll()
-                        .requestMatchers("/api/notification/**").hasAnyAuthority("ADMIN", "USER")
+                        .requestMatchers("/api/notifications/**").hasAnyAuthority("ADMIN", "USER")
                         .anyRequest().authenticated() // Secure everything else
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

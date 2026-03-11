@@ -35,7 +35,7 @@ public class GatewayConfig {
                                 .filter(lb("TRANSACTION-SERVICE"))
                                 .build())
                         .and(route("notification-swagger-route")
-                                .route(path("/api/notification/v3/api-docs/**").or(path("/api/notification/swagger-ui/**")), http())
+                                .route(path("/api/notifications/v3/api-docs/**").or(path("/api/notifications/swagger-ui/**")), http())
                                 .before(stripPrefix(2))
                                 .filter(lb("NOTIFICATION-SERVICE"))
                                 .build())
@@ -66,7 +66,7 @@ public class GatewayConfig {
                                 .build())
                         .and(route()
                                 // SECURED ROUTE: Notification Service
-                                .route(path("/api/notification/**"), http())
+                                .route(path("/api/notifications/**"), http())
                                 .filter(authFilter.apply())
                                 .filter(lb("NOTIFICATION-SERVICE"))
                                 .build());

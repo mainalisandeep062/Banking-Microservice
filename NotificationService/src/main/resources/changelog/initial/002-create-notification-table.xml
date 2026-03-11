@@ -33,14 +33,10 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="rename-is_read-to-read" author="Sandeep">
-        <renameColumn tableName="notification" oldColumnName="is_read" newColumnName="read" columnDataType="BOOLEAN"/>
-    </changeSet>
-
     <changeSet id="add-index-to-user_id" author="Sandeep">
         <createIndex indexName="idx_notification_user_read" tableName="notification">
             <column name="user_id"/>
-            <column name="read"/>
+            <column name="is_read"/>
         </createIndex>
 
         <createIndex indexName="idx_notification_user_created" tableName="Notification">
