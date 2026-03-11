@@ -19,4 +19,6 @@ public interface UserServices {
     Boolean checkIfUserExists(Long userId);
 
     UserResponseDto getUserById(Long userId);
+
+    Boolean authenticateUser(String email, String password);
 }

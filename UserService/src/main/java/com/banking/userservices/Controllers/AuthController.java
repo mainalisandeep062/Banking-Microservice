@@ -10,13 +10,13 @@ import com.banking.userservices.dto.AuthResponseDto;
 import com.banking.userservices.dto.user.UserRequestDto;
 import com.banking.userservices.dto.user.UserResponseDto;
 import com.banking.userservices.exception.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.*;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,14 +26,13 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserRepo userRepo;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final UserServices userServices;
     private final JwtConfig jwt;
 
     @PostMapping("/login")
     public ApiResponse<AuthResponseDto> login(
-            @RequestBody AuthRequestDto authRequestDto) {
+            @Valid @RequestBody AuthRequestDto authRequestDto) {
 
         Authentication authentication =
                 authenticationManager.authenticate(
@@ -68,18 +67,14 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ApiResponse<UserResponseDto> register(@RequestBody UserRequestDto userRequestDto){
+    public ApiResponse<UserResponseDto> register(@Valid @RequestBody UserRequestDto userRequestDto){
         return ApiResponse.success(200, "ok", userServices.registerUser(userRequestDto));
     }
 
     @PostMapping("/authenticate")
-    public ApiResponse<Boolean> authenticate(@RequestParam String  email,
-                                             @RequestParam String password) {
-        User user = userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-        if (!passwordEncoder.matches(password, user.getPassword()))
-            throw new RuntimeException("Invalid password");
-        return ApiResponse.success(200, "ok", true);
-}
+    public ApiResponse<Boolean> authenticate(@Valid @RequestBody AuthRequestDto authRequestDto) {
+        return ApiResponse.success(200, "ok", userServices.authenticateUser(authRequestDto.getEmail(), authRequestDto.getPassword()));
+    }
 
 
 }

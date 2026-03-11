@@ -12,23 +12,13 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepo extends JpaRepository<User,Long> {
-    @Query(
-            value ="""
-                        select u.*
-                        from `user` u
-                        where u.email=:email
-                    """, nativeQuery = true)
-    Optional<User> findByEmail(@Param("email")String email);
+
+    Optional<User> findByEmail(String email);
 
     @Transactional
     @Modifying
-    @Query(
-            value ="""
-                        update `user` u
-                        set u.last_login=CURRENT_TIMESTAMP()
-                        WHERE u.user_id=:id
-                    """, nativeQuery = true)
-    int updateUserLastLogin(@Param("id")Long id);
+    @Query("UPDATE User u SET u.lastLogin = CURRENT_TIMESTAMP WHERE u.userId = :id")
+    int updateUserLastLogin(@Param("id") Long id);
 
     Boolean existsByUserId(Long userId);
 

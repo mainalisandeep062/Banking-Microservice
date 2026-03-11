@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -23,6 +24,7 @@ public class UserServicesImpl implements UserServices {
     private final RabbitTemplate rabbitTemplate;
     private final UserRepo repo;
 
+    @Transactional
     @Override
     public UserResponseDto registerUser(UserRequestDto userRequest) {
         if(repo.existsByEmail(userRequest.getEmail())) {
@@ -58,12 +60,14 @@ public class UserServicesImpl implements UserServices {
         return toDto(user);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserResponseDto fetchMyProfile(String email) {
         return toDto(repo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User with email " + email + " not found!")));
     }
 
+    @Transactional
     @Override
     public UserResponseDto updateMyProfile(String email, UserUpdateDto userRequest) {
         if(userRequest == null)
@@ -81,6 +85,7 @@ public class UserServicesImpl implements UserServices {
         return toDto(user);
     }
 
+    @Transactional
     @Override
     public String updatePassword(String email, String oldPassword, String newPassword) {
         User user = repo.findByEmail(email)
@@ -112,15 +117,27 @@ public class UserServicesImpl implements UserServices {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Boolean checkIfUserExists(Long userId) {
        return repo.existsByUserId(userId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserResponseDto getUserById(Long userId) {
         return toDto(repo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User Not found!!")));
+    }
+
+    @Override
+    public Boolean authenticateUser(String email, String password) {
+        User user = repo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+        return true;
     }
 }
 
