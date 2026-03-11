@@ -17,7 +17,9 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "account")
+@Table(name = "account", indexes = {
+        @Index(name = "idx_account_user_id", columnList = "userId")
+})
 @EntityListeners(AuditingEntityListener.class)
 public class Account {
     @Id

@@ -13,18 +13,17 @@ import java.util.Optional;
 
 @Repository
 public interface AccountRepo extends JpaRepository<Account, Long> {
-    @Query("""
-                    SELECT a FROM Account a
-                    WHERE a.accountNumber = :accountNumber
-            """)
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+
+    // Read-only — no lock (for balance inquiries, account details, history, etc.)
+    @Query("SELECT a FROM Account a WHERE a.accountNumber = :accountNumber")
     Optional<Account> findByAccountNumber(@Param("accountNumber") String accountNumber);
+
+    // Write path — pessimistic lock (for withdraw, deposit, transfer)
+    @Query("SELECT a FROM Account a WHERE a.accountNumber = :accountNumber")
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Account> findByAccountNumberForUpdate(@Param("accountNumber") String accountNumber);
 
     Boolean existsByAccountNumber(String accountNumber);
 
-    @Query(value = """
-                    SELECT a.* FROM account a
-                    WHERE a.user_id = :userId
-            """, nativeQuery = true)
-    List<Account> findByUserId(@Param("userId") Long userId);
+    List<Account> findByUserId(Long userId);
 }

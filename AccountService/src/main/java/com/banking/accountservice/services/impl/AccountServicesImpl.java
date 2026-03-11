@@ -13,7 +13,7 @@ import com.banking.accountservice.models.AccountDetails;
 import com.banking.accountservice.repo.AccountDetailsRepo;
 import com.banking.accountservice.repo.AccountRepo;
 import com.banking.accountservice.services.AccountServices;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -23,11 +23,11 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class AccountServicesImpl implements AccountServices {
@@ -86,7 +86,10 @@ public class AccountServicesImpl implements AccountServices {
                         .build();
         accountDetailsRepo.save(details);
 
-        return toDto(account, details);
+        // Fetch name once for the response (admin may create for another user)
+        UserResponseDto userDto = userClient.getUserById(account.getUserId()).getBody();
+        String holderName = userDto != null ? userDto.getFullName() : "";
+        return toDto(account, details, holderName);
     }
 
     @Override
@@ -95,12 +98,13 @@ public class AccountServicesImpl implements AccountServices {
         return null;
     }
 
+    @Transactional
     @Override
     public AccountResponseDto closeAccount(String email, String password, String accountNumber) {
         Account account = accountRepo.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Cannot find account by accountNumber: " + accountNumber));
 
-        Boolean authentication = userClient.authenticate(email, password).getBody();
+        Boolean authentication = userClient.authenticate(Map.of("email", email, "password", password)).getBody();
 
         if(!authentication)
             throw new BadCredentialsException("Bad Credentials");
@@ -123,21 +127,22 @@ public class AccountServicesImpl implements AccountServices {
             log.error("Failed to send account closure notification: {}", ex.getMessage());
         }
 
-        return toDto(account,  account.getAccountDetails());
+        return toDto(account, account.getAccountDetails(), resolveCurrentUserName());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<AccountResponseDto> getMyAccounts(Long userId) {
+        String holderName = resolveCurrentUserName();
         List<Account> accounts = accountRepo.findByUserId(userId);
         return accounts.stream()
-                .map(account -> toDto(account, account.getAccountDetails()))
+                .map(account -> toDto(account, account.getAccountDetails(), holderName))
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BalanceResponseDto getBalanceByAccountNumber(Long userId, String accountNumber) {
-        CurrentUser user = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         //Check if the user ID or account number is passed as null
         if(accountNumber==null || userId == null)
             return null;
@@ -148,32 +153,37 @@ public class AccountServicesImpl implements AccountServices {
         return BalanceResponseDto.builder()
                 .accountId(account.getAccountId())
                 .accountNumber(accountNumber)
-                .accountHolderName(user.firstName() + " " + user.lastName())
+                .accountHolderName(resolveCurrentUserName())
                 .currentBalance(account.getBalance())
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public AccountResponseDto getAccountByAccountNumber(Long userId, String accountNumber) {
         if(accountNumber==null)
             return null;
         Account account = accountRepo.findByAccountNumber(accountNumber)
-                .orElseThrow(() ->new RuntimeException(""));
+                .orElseThrow(() -> new RuntimeException("Cannot find account with accountNumber: " + accountNumber));
 
         if(!userId.equals(account.getUserId()))
             throw new BadCredentialsException("Only Account holder can Inquire Account Details!!!");
-        return toDto(account, account.getAccountDetails());
+        return toDto(account, account.getAccountDetails(), resolveCurrentUserName());
     }
 
-    public AccountResponseDto toDto(Account account, AccountDetails accountDetails) {
+    private String resolveCurrentUserName() {
+        CurrentUser user = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return user.firstName() + " " + user.lastName();
+    }
+
+    public AccountResponseDto toDto(Account account, AccountDetails accountDetails, String accountHolderName) {
         if(account == null || accountDetails == null)
             return null;
 
-        UserResponseDto userResponseDto = userClient.getUserById(account.getUserId()).getBody();
         return AccountResponseDto.builder()
                 .accountId(account.getAccountId())
                 .accountNumber(account.getAccountNumber())
-                .accountHolderName(userResponseDto.getFullName())
+                .accountHolderName(accountHolderName)
                 .accountType(account.getAccountType())
                 .status(account.getStatus())
                 .createdDate(account.getCreatedAt())

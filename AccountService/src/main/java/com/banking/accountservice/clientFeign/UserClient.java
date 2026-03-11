@@ -3,10 +3,9 @@ package com.banking.accountservice.clientFeign;
 import com.banking.accountservice.dtos.mirror.user.UserResponseDto;
 import com.banking.accountservice.exception.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @FeignClient(name = "USER-SERVICE")
 public interface UserClient {
@@ -18,5 +17,5 @@ public interface UserClient {
     ApiResponse<UserResponseDto> getUserById(@RequestParam Long userId);
 
     @PostMapping("api/auth/authenticate")
-    ApiResponse<Boolean> authenticate(@RequestParam String  email, @RequestParam String password);
+    ApiResponse<Boolean> authenticate(@RequestBody Map<String, String> credentials);
 }

@@ -3,13 +3,11 @@ package com.banking.accountservice.dtos;
 import com.banking.accountservice.enums.AccountType;
 import com.banking.accountservice.enums.Currency;
 import lombok.Data;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
-@Component
 public class AccountRequestDto {
     private Long userId;
     private AccountType accountType;

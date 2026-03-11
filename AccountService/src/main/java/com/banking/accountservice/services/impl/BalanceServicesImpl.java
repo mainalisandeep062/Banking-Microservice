@@ -12,7 +12,7 @@ import com.banking.accountservice.models.ProcessedTransaction;
 import com.banking.accountservice.repo.AccountRepo;
 import com.banking.accountservice.repo.ProcessedTransactionRepo;
 import com.banking.accountservice.services.BalanceServices;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +48,7 @@ public class BalanceServicesImpl implements BalanceServices {
             throw new IllegalArgumentException("Invalid Transaction Type for this method!!");
 
         //check if the accountNumber exists in the account database
-        Account account = accountRepo.findByAccountNumber(withdrawRequestDto.getFromAccountNumber())
+        Account account = accountRepo.findByAccountNumberForUpdate(withdrawRequestDto.getFromAccountNumber())
                 .orElseThrow(() -> new IllegalArgumentException("Account does not exist!"));
 
         if(!account.getStatus().equals(Status.ACTIVE))
@@ -113,7 +113,7 @@ public class BalanceServicesImpl implements BalanceServices {
             throw new IllegalArgumentException("Invalid Transaction Type for this method!!");
 
         //Check if the Account exists and is Active
-        Account account = accountRepo.findByAccountNumber(depositRequestDto.getToAccountNumber())
+        Account account = accountRepo.findByAccountNumberForUpdate(depositRequestDto.getToAccountNumber())
                 .orElseThrow(() -> new IllegalArgumentException("Account does not exist!"));
         if(!account.getStatus().equals(Status.ACTIVE))
             throw new IllegalArgumentException("The account is currently " + account.getStatus());
@@ -169,14 +169,14 @@ public class BalanceServicesImpl implements BalanceServices {
         Account secondAccountToLock;
 
         if (fromAccountNumber.compareTo(toAccountNumber) < 0) {
-            firstAccountToLock = accountRepo.findByAccountNumber(fromAccountNumber)
+            firstAccountToLock = accountRepo.findByAccountNumberForUpdate(fromAccountNumber)
                     .orElseThrow(() -> new IllegalArgumentException("Sender account does not exist"));
-            secondAccountToLock = accountRepo.findByAccountNumber(toAccountNumber)
+            secondAccountToLock = accountRepo.findByAccountNumberForUpdate(toAccountNumber)
                     .orElseThrow(() -> new IllegalArgumentException("Receiver account does not exist"));
         } else {
-            firstAccountToLock = accountRepo.findByAccountNumber(toAccountNumber)
+            firstAccountToLock = accountRepo.findByAccountNumberForUpdate(toAccountNumber)
                     .orElseThrow(() -> new IllegalArgumentException("Receiver account does not exist"));
-            secondAccountToLock = accountRepo.findByAccountNumber(fromAccountNumber)
+            secondAccountToLock = accountRepo.findByAccountNumberForUpdate(fromAccountNumber)
                     .orElseThrow(() -> new IllegalArgumentException("Sender account does not exist"));
         }
 
@@ -237,7 +237,6 @@ public class BalanceServicesImpl implements BalanceServices {
         if (account.getLastTransactionDate() == null || account.getLastTransactionDate().isBefore(LocalDate.now())) {
             account.setTotalWithdrawToday(BigDecimal.ZERO);
             account.setLastTransactionDate(LocalDate.now());
-            accountRepo.save(account);
         }
     }
 
