@@ -47,7 +47,7 @@ public class NotificationSyncConsumer {
                 userRepo.save(recipient);
 
                 notificationRepo.save(Notification.builder()
-                        .isRead(false)
+                        .read(false)
                         .title("Welcome!! You're successfully registered!")
                         .message("Welcome to this banking system. You've successfully registered! You are suggested to open an account and for that first read the manual that will be provided to you soon. Thank you!!")
                         .type(NotificationType.USER_REGISTERED)
@@ -75,13 +75,13 @@ public class NotificationSyncConsumer {
     @RabbitListener(queues = "account.sync.queue")
     public void consumeUserSync(AccountSyncNotificationDto dto, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         log.info("Processing new Account creation Notification!!");
-        NotificationUser recipient = userRepo.findByUserId(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found!"));
 
         try {
+            NotificationUser recipient = userRepo.findByUserId(dto.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found!"));
             if(dto.getNotificationType().equals("ACCOUNT_CREATED"))
                 notificationRepo.save(Notification.builder()
-                        .isRead(false)
+                        .read(false)
                         .title("Congratulation!! Your account has been successfully created!")
                         .message("Congratulations!!! your Account has been successfully created.")
                         .type(NotificationType.ACCOUNT_CREATED)
@@ -90,7 +90,7 @@ public class NotificationSyncConsumer {
                         .build());
             if(dto.getNotificationType().equals("ACCOUNT_CLOSED"))
                 notificationRepo.save(Notification.builder()
-                        .isRead(false)
+                        .read(false)
                         .title("Your account has been closed!")
                         .message(ACCOUNT_CLOSED_MESSAGE)
                         .type(NotificationType.ACCOUNT_CLOSED)
@@ -124,7 +124,7 @@ public class NotificationSyncConsumer {
                         .orElseThrow(() -> new RuntimeException("User not found!"));
 
                 notificationRepo.save(Notification.builder()
-                        .isRead(false)
+                        .read(false)
                         .title("The transfer was successful!!")
                         .message(dto.getAmount() + " was transferred to " + dto.getToAccountNumber() + " successfully! ")
                         .type(NotificationType.TRANSFER_SENT)
@@ -137,7 +137,7 @@ public class NotificationSyncConsumer {
                         dto);
 
                 notificationRepo.save(Notification.builder()
-                        .isRead(false)
+                        .read(false)
                         .title("The transfer was successful!!")
                         .message(dto.getAmount() + " was transferred From " + dto.getFromAccountNumber() + " to your account successfully! ")
                         .type(NotificationType.TRANSFER_RECEIVED)
@@ -154,7 +154,7 @@ public class NotificationSyncConsumer {
                 NotificationUser user = userRepo.findByUserId(dto.getToUserId())
                         .orElseThrow(() -> new RuntimeException("User not found!"));
                 notificationRepo.save(Notification.builder()
-                        .isRead(false)
+                        .read(false)
                         .title("The money was successfully deposited!!")
                         .message(dto.getAmount() + " was Deposited to Account: " + dto.getToAccountNumber() + " successfully! ")
                         .type(NotificationType.CREDIT)
@@ -172,7 +172,7 @@ public class NotificationSyncConsumer {
                         .orElseThrow(() -> new RuntimeException("User not found!"));
 
                 notificationRepo.save(Notification.builder()
-                        .isRead(false)
+                        .read(false)
                         .title("The money was successfully Withdrawn!!")
                         .message(dto.getAmount() + " was Withdrawn from Account: " + dto.getFromAccountNumber() + " successfully! ")
                         .type(NotificationType.DEBIT)
@@ -192,4 +192,3 @@ public class NotificationSyncConsumer {
          }
     }
 }
-

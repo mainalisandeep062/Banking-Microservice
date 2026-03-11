@@ -13,7 +13,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "notification")
+@Table(name = "notification", indexes = {
+        @Index(name = "idx_notification_user_read", columnList = "user_id, is_read"),
+        @Index(name = "idx_notification_user_created", columnList = "user_id, createdAt")
+})
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +37,8 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-    private boolean isRead = false;
+    @Column(name = "is_read")
+    private boolean read = false;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

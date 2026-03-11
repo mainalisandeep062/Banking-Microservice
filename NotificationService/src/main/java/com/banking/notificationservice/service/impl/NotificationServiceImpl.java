@@ -46,6 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
         throw new RuntimeException("Unable to resolve current user");
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<NotificationDto> getMyNotifications() {
         NotificationUser user = resolveCurrentUser();
@@ -57,9 +58,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public void markAllAsRead() {
         NotificationUser user = resolveCurrentUser();
-        List<Notification> unread = notificationRepo.findAllByRecipientAndIsReadFalse(user);
-        unread.forEach(n -> n.setRead(true));
-        notificationRepo.saveAll(unread);
+        notificationRepo.markAllAsReadByRecipient(user);
     }
 
     @Override
@@ -76,10 +75,11 @@ public class NotificationServiceImpl implements NotificationService {
         return toDto(saved);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public long getUnreadCount() {
         NotificationUser user = resolveCurrentUser();
-        return notificationRepo.countByRecipientAndIsReadFalse(user);
+        return notificationRepo.countByRecipientAndReadFalse(user);
     }
 
     private NotificationDto toDto(Notification n) {
