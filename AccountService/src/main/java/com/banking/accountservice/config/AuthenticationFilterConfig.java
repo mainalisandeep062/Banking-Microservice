@@ -42,7 +42,6 @@ public class AuthenticationFilterConfig extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final String userEmail;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -51,23 +50,23 @@ public class AuthenticationFilterConfig extends OncePerRequestFilter {
 
         jwt = authHeader.substring(7);
 
-        Claims claims = jwtUtils.extractAllClaims(jwt);
-
-        CurrentUser currentUser = CurrentUser.builder()
-                .subject(claims.getSubject())
-                .userId(claims.get("userId", Long.class))
-                .role(claims.get("role", String.class))
-                .firstName(claims.get("firstName", String.class))
-                .lastName(claims.get("lastName", String.class))
-                .build();
-
         try {
             if (jwtUtils.validateToken(jwt)) {
-                userEmail = jwtUtils.extractEmail(jwt);
+                Claims claims = jwtUtils.extractAllClaims(jwt);
+
+                CurrentUser currentUser = CurrentUser.builder()
+                        .subject(claims.getSubject())
+                        .userId(claims.get("userId", Long.class))
+                        .role(claims.get("role", String.class))
+                        .firstName(claims.get("firstName", String.class))
+                        .lastName(claims.get("lastName", String.class))
+                        .build();
+
+                String userEmail = claims.getSubject();
 
                 if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                    String role = jwtUtils.extractRole(jwt);
+                    String role = claims.get("role", String.class);
                     List<SimpleGrantedAuthority> authorities = Collections.singletonList(
                             new SimpleGrantedAuthority(role)
                     );
