@@ -14,4 +14,6 @@ public interface NotificationService {
 
     long getUnreadCount();
 
+    void deleteNotification(Integer notificationId);
+
 }

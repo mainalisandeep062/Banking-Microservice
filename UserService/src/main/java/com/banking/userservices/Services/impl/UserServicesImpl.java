@@ -139,5 +139,18 @@ public class UserServicesImpl implements UserServices {
         }
         return true;
     }
+
+    @Transactional
+    @Override
+    public UserResponseDto deactivateAccount(String email) {
+        User user = repo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User with email " + email + " not found!"));
+        if (!user.getIsActive()) {
+            throw new RuntimeException("Account is already deactivated!");
+        }
+        user.setIsActive(false);
+        repo.save(user);
+        return toDto(user);
+    }
 }
 

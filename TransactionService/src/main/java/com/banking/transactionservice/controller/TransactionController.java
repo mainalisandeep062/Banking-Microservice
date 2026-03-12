@@ -41,4 +41,9 @@ public class TransactionController {
                 historyService.getHistoryByAccountNumber(accountNumber, pageNumber));
     }
 
+    @GetMapping("/{transactionId}")
+    public ApiResponse<TransactionResponseDto> getTransactionById(@PathVariable Long transactionId) {
+        return ApiResponse.success(200, "OK", transactionService.getTransactionById(transactionId));
+    }
+
 }

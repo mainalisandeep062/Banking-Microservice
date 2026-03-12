@@ -200,6 +200,14 @@ public class TransactionServicesImpl implements TransactionServices {
         );
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public TransactionResponseDto getTransactionById(Long transactionId) {
+        Transaction transaction = transactionRepo.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction with ID " + transactionId + " not found!"));
+        return toDto(transaction);
+    }
+
     private TransactionResponseDto toDto(Transaction txn) {
         return TransactionResponseDto.builder()
                 .transactionId(txn.getTransactionId())

@@ -21,4 +21,6 @@ public interface UserServices {
     UserResponseDto getUserById(Long userId);
 
     Boolean authenticateUser(String email, String password);
+
+    UserResponseDto deactivateAccount(String email);
 }

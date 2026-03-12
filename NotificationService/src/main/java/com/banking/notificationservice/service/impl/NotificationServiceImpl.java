@@ -82,6 +82,18 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepo.countByRecipientAndReadFalse(user);
     }
 
+    @Transactional
+    @Override
+    public void deleteNotification(Integer notificationId) {
+        NotificationUser user = resolveCurrentUser();
+        Notification notification = notificationRepo.findById(notificationId)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+        if (notification.getRecipient() == null || !notification.getRecipient().getUserId().equals(user.getUserId())) {
+            throw new RuntimeException("Not authorized to delete this notification");
+        }
+        notificationRepo.delete(notification);
+    }
+
     private NotificationDto toDto(Notification n) {
         return NotificationDto.builder()
                 .id(n.getId())

@@ -6,9 +6,11 @@ import com.banking.accountservice.dtos.mirror.transaction.TransferRequestDto;
 import com.banking.accountservice.dtos.mirror.transaction.WithdrawRequestDto;
 import com.banking.accountservice.exception.ApiResponse;
 import com.banking.accountservice.services.BalanceServices;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@Hidden
 @RestController
 @RequestMapping("/api/account/transaction")
 @RequiredArgsConstructor

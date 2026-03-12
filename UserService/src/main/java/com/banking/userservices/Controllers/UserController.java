@@ -43,4 +43,9 @@ public class UserController {
         return ApiResponse.success(200, "OK", userServices.checkIfUserExists(userId));
     }
 
+    @PatchMapping("/deactivate")
+    public ApiResponse<UserResponseDto> deactivateAccount(@AuthenticationPrincipal String email) {
+        return ApiResponse.success(200, "Account deactivated successfully", userServices.deactivateAccount(email));
+    }
+
 }

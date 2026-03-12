@@ -11,4 +11,6 @@ public interface TransactionServices {
     TransactionResponseDto deposit(DepositRequestDto depositRequestDto);
 
     TransactionResponseDto transfer(TransferRequestDto transferRequestDto);
+
+    TransactionResponseDto getTransactionById(Long transactionId);
 }
